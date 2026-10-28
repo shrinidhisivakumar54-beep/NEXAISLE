@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { products, type Product } from './store';
 import { Avatar, Trolley, Box, Tube, Sign, Garment, GroceryModel, PriceTag, type Vec3 } from './world/Models';
 import { aisleNames, aislePosition, rackPosition, isBlocked } from './world/layout';
-import { RealGarment, hasHangingGarment } from './world/RealGarment';
+import { RealGarment } from './world/RealGarment';
 export { Avatar } from './world/Models';
 type View = 'walk'|'overview';
 type Props = {mode:string;onProduct?:(p:Product)=>void;onAssistant?:()=>void;focusAisle?:number|null;navigationKey?:number;paused?:boolean};
@@ -32,7 +32,7 @@ function WorldLabel({title,subtitle,position,onClick,className}:{title:string;su
 function useMemoVector(){const ref=useRef(new THREE.Vector3());return ref.current}
 function Selectable({product,onProduct,children,position,rotation=0}:{product:Product;onProduct:(p:Product)=>void;children:React.ReactNode;position:Vec3;rotation?:number}) {
  const [hover,setHover]=useState(false);const group=useRef<THREE.Group>(null);
- useFrame((_,dt)=>{if(group.current){const target=hover?1.08:1;group.current.scale.lerp(new THREE.Vector3(target,target,target),1-Math.exp(-dt*12));group.current.position.z=THREE.MathUtils.damp(group.current.position.z,hover&&product.level==='fashion'?.22:0,9,dt)}});
+ useFrame((_,dt)=>{if(group.current){const target=hover?1.08:1;group.current.scale.lerp(new THREE.Vector3(target,target,target),1-Math.exp(-dt*12));group.current.position.z=THREE.MathUtils.damp(group.current.position.z,hover&&product.level==='fashion'?0.22:0,9,dt)}});
  return <group position={position} rotation={[0,rotation,0]} onClick={e=>{e.stopPropagation();onProduct(product)}} onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer'}} onPointerOut={()=>{setHover(false);document.body.style.cursor='auto'}}><group ref={group}>{children}</group>{hover&&<WorldLabel position={[0,.9,0]} title={product.name} subtitle="Click to inspect in 3D ↗" className="shelf-tooltip"/>}</group>;
 }
 function Shelf({aisle,onProduct,active}:{aisle:number;onProduct:(p:Product)=>void;active:boolean}) {
@@ -48,7 +48,7 @@ function ClothingRack({rack,onProduct}:{rack:number;onProduct:(p:Product)=>void}
  const hanging=items.filter(p=>!/sneaker|boots|shoes/i.test(p.name));
  // The catalogue has just 3 SKUs per rail. Multiple facings, like a real shop,
  // fill the rail without inventing products or changing selection behaviour.
- const facings=hanging.flatMap(p=>[p,p]).slice(0,6);
+ const facings=Array.from({length:Math.min(6,hanging.length*2)},(_,i)=>hanging[i%hanging.length]);
  const railY=2.04;
  return <group position={rackPosition(rack)}>
   {/* Slim satin-chrome display rail with understated supports. Garment GLBs
