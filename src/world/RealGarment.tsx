@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Component, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 import type { Product } from '../store';
@@ -41,6 +41,16 @@ function getModel(url:string) {
   return cache.get(url)!;
 }
 
+/** Keep a single malformed GLB from blanking the entire shopping level. */
+class GarmentRenderBoundary extends Component<{product:Product;children:ReactNode},{failed:boolean}> {
+ state={failed:false};
+ static getDerivedStateFromError(){return {failed:true};}
+ componentDidCatch(error:Error){console.warn('Garment render failed; displaying local fallback.',error);}
+ render(){return this.state.failed
+  ? <group position={[0,-.79,0]}><Garment product={this.props.product}/></group>
+  : this.props.children;}
+}
+
 export const hasHangingGarment = (product:Product) => !!modelUrls[product.id];
 
 export function RealGarment({product}:{product:Product}) {
@@ -60,5 +70,5 @@ export function RealGarment({product}:{product:Product}) {
   const model=useMemo(()=>loaded?.url===url?loaded.model:null,[loaded,url]);
   if (!model) return <group position={[0,-.79,0]}><Garment product={product} /></group>;
   // GLB hook pivot is at [0,0,0], so when placed at rail Y the garment hangs below it.
-  return <primitive object={model}/>;
+  return <GarmentRenderBoundary product={product}><primitive object={model}/></GarmentRenderBoundary>;
 }
