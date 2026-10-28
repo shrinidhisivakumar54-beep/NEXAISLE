@@ -32,3 +32,14 @@ test('accepts Vite loopback origins through the proxy, rejects unrelated origins
     assert.equal((await post({}, {Origin:origin})).status,403,origin);
   }
 });
+test('empty provider response gives an actionable error',async t=>{
+  const post=await service(t,{key:'test',fetcher:async()=>new Response('',{status:200})});
+  const response=await post({person:pixel,garment:pixel,pose:'front',consent:true});
+  assert.equal(response.status,502);
+  assert.match((await response.json()).error,/empty or invalid image response/);
+});
+test('unsupported image response is distinguished from network failure',async t=>{
+  const post=await service(t,{key:'test',fetcher:async()=>Response.json({data:[{url:'https://example.com/image.png'}]})});
+  const response=await post({person:pixel,garment:pixel,pose:'front',consent:true});
+  assert.match((await response.json()).error,/no base64 image/);
+});

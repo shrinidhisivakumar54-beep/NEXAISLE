@@ -49,10 +49,16 @@ export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch, ba
       lastStarted=Date.now();
       const response=await fetcher(base+'/images/edits',{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${key}`},body:form,signal:controller.signal});
       if(!response.ok) return send(502,{error:response.status===429?'The image service is busy or its quota is exhausted. Try later.':`${provider} image editing returned HTTP ${response.status}. Check that this key and model support /v1/images/edits with two images.`});
-      const result=await response.json();
-      if(!result.data?.[0]?.b64_json) throw new Error('No image returned');
+      let result;
+      try { result=await response.json(); }
+      catch {return send(502,{error:`${provider} returned an empty or invalid image response (HTTP ${response.status}). Check provider request history before retrying.`});}
+      if(!result?.data?.[0]?.b64_json) return send(502,{error:`${provider} returned no base64 image. Its response format may differ from the supported image-editing API. Check provider request history before retrying.`});
       send(200,{image:`data:image/png;base64,${result.data[0].b64_json}`});
-    } catch {send(502,{error:controller.signal.aborted?'Generation timed out or was cancelled. Please try again.':'Generation failed. Please try again.'});}
+    } catch(error) {
+      const code=error?.cause?.code;
+      const certificate=['UNABLE_TO_GET_ISSUER_CERT_LOCALLY','UNABLE_TO_VERIFY_LEAF_SIGNATURE','CERT_HAS_EXPIRED','SELF_SIGNED_CERT_IN_CHAIN'].includes(code);
+      send(502,{error:controller.signal.aborted?'Generation timed out or was cancelled. Check provider request history before retrying.':certificate?'The server could not verify the image provider’s HTTPS certificate. Update Node.js or configure its trusted CA certificates; do not disable certificate verification.':`Could not complete the connection to ${provider}. Check the connection and provider request history before retrying.`});
+    }
     finally {clearTimeout(timer);active=false;}
   };
 }
