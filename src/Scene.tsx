@@ -32,7 +32,7 @@ function WorldLabel({title,subtitle,position,onClick,className}:{title:string;su
 function useMemoVector(){const ref=useRef(new THREE.Vector3());return ref.current}
 function Selectable({product,onProduct,children,position,rotation=0}:{product:Product;onProduct:(p:Product)=>void;children:React.ReactNode;position:Vec3;rotation?:number}) {
  const [hover,setHover]=useState(false);const group=useRef<THREE.Group>(null);
- useFrame((_,dt)=>{if(group.current){const target=hover?1.08:1;group.current.scale.lerp(new THREE.Vector3(target,target,target),1-Math.exp(-dt*12))}});
+ useFrame((_,dt)=>{if(group.current){const target=hover?1.08:1;group.current.scale.lerp(new THREE.Vector3(target,target,target),1-Math.exp(-dt*12));group.current.position.z=THREE.MathUtils.damp(group.current.position.z,hover&&product.level==='fashion'?.22:0,9,dt)}});
  return <group position={position} rotation={[0,rotation,0]} onClick={e=>{e.stopPropagation();onProduct(product)}} onPointerOver={e=>{e.stopPropagation();setHover(true);document.body.style.cursor='pointer'}} onPointerOut={()=>{setHover(false);document.body.style.cursor='auto'}}><group ref={group}>{children}</group>{hover&&<WorldLabel position={[0,.9,0]} title={product.name} subtitle="Click to inspect in 3D ↗" className="shelf-tooltip"/>}</group>;
 }
 function Shelf({aisle,onProduct,active}:{aisle:number;onProduct:(p:Product)=>void;active:boolean}) {
@@ -44,27 +44,43 @@ function Shelf({aisle,onProduct,active}:{aisle:number;onProduct:(p:Product)=>voi
 }
 function ClothingRack({rack,onProduct}:{rack:number;onProduct:(p:Product)=>void}) {
  const items=products.filter(p=>p.level==='fashion'&&p.aisle===rack);
- const railY=2.65;
+ const shoes=items.filter(p=>/sneaker|boots|shoes/i.test(p.name));
+ const hanging=items.filter(p=>!/sneaker|boots|shoes/i.test(p.name));
+ // The catalogue has just 3 SKUs per rail. Multiple facings, like a real shop,
+ // fill the rail without inventing products or changing selection behaviour.
+ const facings=hanging.flatMap(p=>[p,p]).slice(0,6);
+ const railY=2.04;
  return <group position={rackPosition(rack)}>
-  {/* Dark matte base, polished steel rail and grounded display plinths. */}
-  <Box position={[0,.07,0]} scale={[4.2,.14,1.35]} color="#17202f"/>
-  {[-1.9,1.9].map(x=><Tube key={x} a={[x,.1,0]} b={[x,railY,0]} radius={.032} color="#ba9b62"/>)}
-  <Tube a={[-1.95,railY,0]} b={[1.95,railY,0]} radius={.038} color="#ba9b62"/>
-  {items.map((p,i)=>{
-   const x=-1.25+i*1.25;
-   // Shoes should rest on a shelf, never dangle in mid-air from a hanger.
-   return hasHangingGarment(p)?
-    <Selectable key={p.id} product={p} position={[x,railY,.06]} onProduct={onProduct}>
-      <group scale={1.24}><RealGarment product={p}/></group>
-    </Selectable>:
-    <group key={p.id}>
-      <Box position={[x,.73,.2]} scale={[1.04,.11,.82]} color="#d3c5ab"/>
-      <Selectable product={p} position={[x,.98,.2]} onProduct={onProduct}>
-        <group scale={1.45}><Garment product={p} hanger={false}/></group>
-      </Selectable>
-    </group>;
+  {/* Slim satin-chrome display rail with understated supports. Garment GLBs
+      already contain accurate wooden/velvet hangers and metal hooks. */}
+  <Box position={[0,.055,0]} scale={[4.35,.11,1.30]} color="#eee7dd"/>
+  {[-2.01,2.01].map(x=><group key={x}>
+    <Tube a={[x,.12,0]} b={[x,railY+.02,0]} radius={.018} color="#b5babe"/>
+    <Box position={[x,.12,0]} scale={[.38,.1,.58]} color="#9b9da2" metal={.65} roughness={.23}/>
+    <Tube a={[x,railY-.26,-.32]} b={[x,railY+.02,0]} radius={.018} color="#b7b6ad"/>
+   </group>)}
+  <Tube a={[-2.07,railY,0]} b={[2.07,railY,0]} radius={.027} color="#d0d5d8"/>
+  {facings.map((p,i)=>{
+   const x=(i-(facings.length-1)/2)*.70;
+   return <Selectable key={p.id+'-'+i} product={p} position={[x,railY,.03]} onProduct={onProduct}>
+     <group scale={1.04}><RealGarment product={p}/></group>
+   </Selectable>;
   })}
-  <Sign title={['THE DAILY EDIT','STATEMENT PIECES','SOFT STRUCTURES','CITY ESSENTIALS'][rack-1]} sub="REAL HANGING GARMENTS / CLICK TO INSPECT" position={[0,3.26,.05]} width={3.55} height={.66} color="#c7ff32" dark/>
+  {shoes.map((p,i)=>{
+   const x=(i-(shoes.length-1)/2)*1.14;
+   return <group key={p.id}>
+     <Box position={[x,.53,.48]} scale={[1.22,.085,.75]} color="#d6cbbd"/>
+     <Selectable product={p} position={[x,.83,.48]} onProduct={onProduct}>
+       <group scale={1.55}><Garment product={p} hanger={false}/></group>
+     </Selectable>
+   </group>;
+  })}
+  {/* Floating boutique rail label; placed above the actual hanger hooks. */}
+  <Box position={[0,2.73,-.44]} scale={[3.55,.54,.05]} color="#f6f3ed"/>
+  <Sign title={['THE DAILY EDIT','STATEMENT PIECES','SOFT STRUCTURES','CITY ESSENTIALS'][rack-1]}
+    sub="SELECT A GARMENT / EXPLORE THE LOOK" position={[0,2.73,-.401]}
+    width={3.45} height={.48} color="#b59973"/>
+  <pointLight position={[0,3.32,1]} color="#fff4e5" intensity={14} distance={7} decay={2}/>
  </group>;
 }
 const routes:Vec3[][]=[[[0,0,-8],[0,0,7],[-5.4,0,7],[-5.4,0,-8]],[[-10.8,0,-8],[-10.8,0,7],[-5.4,0,7],[-5.4,0,-8]],[[5.4,0,-8],[5.4,0,7],[10.8,0,7],[10.8,0,-8]],[[0,0,-8],[10.8,0,-8],[10.8,0,7],[0,0,7]]];
@@ -77,8 +93,8 @@ function Employee({fashion,onAssistant}:{fashion:boolean;onAssistant:()=>void}) 
  return <group position={[fashion?-2.7:3.3,0,8.2]} onClick={e=>{e.stopPropagation();onAssistant()}}><Avatar shirt="#2155ff" skin="#bd8365"/><Box position={[0,1.2,.215]} scale={[.32,.4,.025]} color="#173d80"/><Sign title="NOVA" sub="STORE GUIDE" position={[.11,1.43,.23]} width={.19} height={.11}/><WorldLabel position={[0,2.6,0]} title="NOVA " subtitle="STORE ASSISTANT · CLICK TO TALK" className="employee-label" onClick={onAssistant}/></group>;
 }
 function Architecture({fashion}:{fashion:boolean}) {
- return <><Box position={[0,-.13,0]} scale={[26,.25,27]} color={fashion?'#31303a':'#243745'} roughness={.3}/><Grid position={[0,.003,0]} args={[25,26]} cellSize={fashion?2:1} cellThickness={.55} cellColor={fashion?'#55505b':'#304657'} sectionSize={5} sectionThickness={.5} sectionColor="#516271" fadeDistance={40}/><Box position={[0,2.8,-12.5]} scale={[26,5.6,.22]} color={fashion?'#242635':'#182532'}/>{[-12.7,12.7].map(x=><group key={x}><Box position={[x,2.7,-1]} scale={[.2,5.4,24]} color={fashion?'#242b38':'#192837'}/><Box position={[x*.99,3.7,-1]} scale={[.04,.15,24]} color={fashion?'#c2a272':'#2155ff'}/></group>)}<Sign position={[0,3.8,-12.34]} title={fashion?'NEXAISLE / ATELIER':'NEXAISLE / FRESH MARKET'} sub={fashion?'A NEW PERSPECTIVE ON PERSONAL STYLE':'GOOD INGREDIENTS. NEW POSSIBILITIES.'} width={8} height={1.65} dark color={fashion?'#b99b69':'#c7ff32'}/>{[-9,-3,3,9].map(x=><group key={x}><Box position={[x,5,-1]} scale={[.1,.1,24]} color="#aaaeb1"/>{[-8,0,8].map(z=><group key={z}><Box position={[x,4.9,z]} scale={[3.6,.07,.35]} color="#f9f8e8"/><mesh position={[x,4.84,z]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[3.4,.3]}/><meshStandardMaterial color="#fff8dd" emissive="#fff8dd" emissiveIntensity={2}/></mesh></group>)}</group>)}{[-11,11].map(x=><group key={x} position={[x,0,-10.9]}><Box position={[0,.4,0]} scale={[.7,.8,.7]} color="#afa796"/>{[-.12,.08,.22].map((a,i)=><mesh key={i} position={[a,1+i*.2,0]} scale={[.28,.6,.18]} rotation={[.2,a,Math.PI/7*i]}><sphereGeometry args={[1,10,10]}/><meshStandardMaterial color="#4f7544"/></mesh>)}</group>)}
- <Box position={[0,.55,-10.5]} scale={[7,1.1,1.25]} color={fashion?'#342e34':'#192d3a'}/><Box position={[0,1.13,-10.5]} scale={[7.2,.12,1.4]} color={fashion?'#e9ddce':'#33485a'}/><Sign title={fashion?'THE STYLE DESK':'CHECKOUT / DEMO'} sub="YOUR BAG IS SAVED BETWEEN WORLDS" position={[0,.65,-9.86]} width={3.6} height={.65} dark/>{[-2,2].map(x=><group key={x}><Box position={[x,1.36,-10.4]} scale={[.7,.42,.07]} color="#1a2325"/><Sign title="NX" sub="DEMO" position={[x,1.36,-10.35]} width={.65} height={.35}/></group>)}
+ return <><Box position={[0,-.13,0]} scale={[26,.25,27]} color={fashion?'#e7e2dc':'#243745'} roughness={.3}/><Grid position={[0,.003,0]} args={[25,26]} cellSize={fashion?2:1} cellThickness={.55} cellColor={fashion?'#c9c4bd':'#304657'} sectionSize={5} sectionThickness={.5} sectionColor="#516271" fadeDistance={40}/><Box position={[0,2.8,-12.5]} scale={[26,5.6,.22]} color={fashion?'#f6f5f2':'#182532'}/>{[-12.7,12.7].map(x=><group key={x}><Box position={[x,2.7,-1]} scale={[.2,5.4,24]} color={fashion?'#e6e0d9':'#192837'}/><Box position={[x*.99,3.7,-1]} scale={[.04,.15,24]} color={fashion?'#c2a272':'#2155ff'}/></group>)}<Sign position={[0,3.8,-12.34]} title={fashion?'NEXAISLE / ATELIER':'NEXAISLE / FRESH MARKET'} sub={fashion?'A NEW PERSPECTIVE ON PERSONAL STYLE':'GOOD INGREDIENTS. NEW POSSIBILITIES.'} width={8} height={1.65} dark color={fashion?'#b99b69':'#c7ff32'}/>{[-9,-3,3,9].map(x=><group key={x}><Box position={[x,5,-1]} scale={[.1,.1,24]} color="#aaaeb1"/>{[-8,0,8].map(z=><group key={z}><Box position={[x,4.9,z]} scale={[3.6,.07,.35]} color="#f9f8e8"/><mesh position={[x,4.84,z]} rotation={[-Math.PI/2,0,0]}><planeGeometry args={[3.4,.3]}/><meshStandardMaterial color="#fff8dd" emissive="#fff8dd" emissiveIntensity={2}/></mesh></group>)}</group>)}{[-11,11].map(x=><group key={x} position={[x,0,-10.9]}><Box position={[0,.4,0]} scale={[.7,.8,.7]} color="#afa796"/>{[-.12,.08,.22].map((a,i)=><mesh key={i} position={[a,1+i*.2,0]} scale={[.28,.6,.18]} rotation={[.2,a,Math.PI/7*i]}><sphereGeometry args={[1,10,10]}/><meshStandardMaterial color="#4f7544"/></mesh>)}</group>)}
+ <Box position={[0,.55,-10.5]} scale={[7,1.1,1.25]} color={fashion?'#d2c3b2':'#192d3a'}/><Box position={[0,1.13,-10.5]} scale={[7.2,.12,1.4]} color={fashion?'#f1e8da':'#33485a'}/><Sign title={fashion?'THE STYLE DESK':'CHECKOUT / DEMO'} sub="YOUR BAG IS SAVED BETWEEN WORLDS" position={[0,.65,-9.86]} width={3.6} height={.65} dark/>{[-2,2].map(x=><group key={x}><Box position={[x,1.36,-10.4]} scale={[.7,.42,.07]} color="#1a2325"/><Sign title="NX" sub="DEMO" position={[x,1.36,-10.35]} width={.65} height={.35}/></group>)}
  {fashion&&<><mesh position={[0,1.8,-12.3]}><planeGeometry args={[3,3]}/><meshStandardMaterial color="#c7d8df" metalness={.93} roughness={.16}/></mesh><Sign title="FITTING SUITE" sub="GARMENT FIT SIMULATION NOT INCLUDED" position={[0,3.5,-12.2]} width={3} height={.5}/></>}
  </>;
 }
@@ -89,6 +105,6 @@ export function ProductViewer({product}:{product:Product}) {
  return <div className="inspection-canvas"><Canvas shadows dpr={[1.5,2]} camera={{position:[0,.25,3.3],fov:36}}><color attach="background" args={['#e6e2d9']}/><ambientLight intensity={1.8}/><directionalLight position={[3,5,4]} intensity={3} castShadow/><directionalLight position={[-3,2,-1]} intensity={2}/><group position={[0,product.level==='fashion'?.1:-.25,0]}>{product.level==='fashion'?<group position={[0,.35,0]}><RealGarment product={product}/></group>:<group scale={1.6}><GroceryModel product={product}/></group>}</group><ContactShadows position={[0,-1.02,0]} scale={6} opacity={.3} blur={2}/><OrbitControls makeDefault target={[0,0,0]} minDistance={1.3} maxDistance={5} enablePan={false}/></Canvas><span>GENUINE 3D VIEW · DRAG TO ROTATE · SCROLL TO ZOOM</span></div>;
 }
 export default function Scene({mode,onProduct,onAssistant,focusAisle,navigationKey,paused}:Props) {
- const home=mode==='home',studio=home||mode==='avatar';const [view,setView]=useState<View>('walk');useEffect(()=>{if(focusAisle)setView('walk')},[focusAisle,navigationKey]);
- return <div className="scene-container"><Canvas shadows camera={{position:home?[4,2.8,6]:studio?[3,2.4,5]:[0,3.7,14.3],fov:studio?35:52}} dpr={[1.5,2]} gl={{antialias:true,powerPreference:"high-performance"}}><color attach="background" args={[studio?'#090e1c':'#1d2d3d']}/><fog attach="fog" args={[studio?'#090e1c':'#1d2d3d',studio?15:32,studio?45:72]}/><ambientLight intensity={studio?1.3:1.1}/><hemisphereLight args={['#fffbed','#8d9b91',.8]}/><directionalLight position={[5,12,8]} intensity={1.9} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={16} shadow-camera-bottom={-16} shadow-bias={-.001}/>{studio&&<pointLight position={[-4,3,-2]} color="#2155ff" intensity={35}/>}<Suspense fallback={null}>{studio?<><group position={[home?-.45:0,0,0]} rotation={[0,-.25,0]}><Avatar/>{home&&<Trolley/>}</group>{home&&<Float speed={1.2} rotationIntensity={.1} floatIntensity={.2}><mesh position={[0,1.5,-1.3]} rotation={[.2,.3,.7]}><torusGeometry args={[1.8,.42,24,80]}/><meshStandardMaterial color="#1644ff" metalness={.55} roughness={.23}/></mesh></Float>}<ContactShadows position={[0,-.02,0]} opacity={.65} scale={12} blur={2.5} far={5}/><Grid position={[0,-.035,0]} args={[30,30]} cellColor="#1b2d4c" sectionColor="#253559" fadeDistance={12}/><OrbitControls target={[0,1,0]} minDistance={4} maxDistance={9} maxPolarAngle={Math.PI/2.05} enablePan={false}/></>:<Shop fashion={mode==='fashion'} onProduct={onProduct!} onAssistant={onAssistant||(()=>{})} view={view} focusAisle={focusAisle} navigationKey={navigationKey} paused={paused}/>}</Suspense></Canvas>{!studio&&<><div className="view-switch" aria-label="Camera mode"><button aria-pressed={view==='walk'} onClick={()=>setView('walk')}>WALK THROUGH</button><button aria-pressed={view==='overview'} onClick={()=>setView('overview')}>STORE OVERVIEW</button></div><div className="touch-controls" aria-label="Movement controls">{[['w','↑'],['a','←'],['s','↓'],['d','→']].map(([key,label])=><button key={key} aria-label={'Move '+({w:'forward',a:'left',s:'backward',d:'right'}[key])} onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);dispatchMove(key,true)}} onPointerUp={()=>dispatchMove(key,false)} onLostPointerCapture={()=>dispatchMove(key,false)} onPointerCancel={()=>dispatchMove(key,false)}>{label}</button>)}</div></>}</div>;
+ const home=mode==='home',studio=home||mode==='avatar',fashionScene=mode==='fashion';const [view,setView]=useState<View>('walk');useEffect(()=>{if(focusAisle)setView('walk')},[focusAisle,navigationKey]);
+ return <div className="scene-container"><Canvas shadows camera={{position:home?[4,2.8,6]:studio?[3,2.4,5]:[0,3.7,14.3],fov:studio?35:52}} dpr={[1.5,2]} gl={{antialias:true,powerPreference:"high-performance"}}><color attach="background" args={[studio?'#090e1c':fashionScene?'#f4f1eb':'#1d2d3d']}/><fog attach="fog" args={[studio?'#090e1c':fashionScene?'#f4f1eb':'#1d2d3d',studio?15:32,studio?45:72]}/><ambientLight intensity={studio?1.3:fashionScene?1.6:1.1}/><hemisphereLight args={['#fffbed','#8d9b91',fashionScene?1.1:.8]}/><directionalLight position={[5,12,8]} intensity={fashionScene?2.15:1.9} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-16} shadow-camera-right={16} shadow-camera-top={16} shadow-camera-bottom={-16} shadow-bias={-.001}/>{studio&&<pointLight position={[-4,3,-2]} color="#2155ff" intensity={35}/>}<Suspense fallback={null}>{studio?<><group position={[home?-.45:0,0,0]} rotation={[0,-.25,0]}><Avatar/>{home&&<Trolley/>}</group>{home&&<Float speed={1.2} rotationIntensity={.1} floatIntensity={.2}><mesh position={[0,1.5,-1.3]} rotation={[.2,.3,.7]}><torusGeometry args={[1.8,.42,24,80]}/><meshStandardMaterial color="#1644ff" metalness={.55} roughness={.23}/></mesh></Float>}<ContactShadows position={[0,-.02,0]} opacity={.65} scale={12} blur={2.5} far={5}/><Grid position={[0,-.035,0]} args={[30,30]} cellColor="#1b2d4c" sectionColor="#253559" fadeDistance={12}/><OrbitControls target={[0,1,0]} minDistance={4} maxDistance={9} maxPolarAngle={Math.PI/2.05} enablePan={false}/></>:<Shop fashion={mode==='fashion'} onProduct={onProduct!} onAssistant={onAssistant||(()=>{})} view={view} focusAisle={focusAisle} navigationKey={navigationKey} paused={paused}/>}</Suspense></Canvas>{!studio&&<><div className="view-switch" aria-label="Camera mode"><button aria-pressed={view==='walk'} onClick={()=>setView('walk')}>WALK THROUGH</button><button aria-pressed={view==='overview'} onClick={()=>setView('overview')}>STORE OVERVIEW</button></div><div className="touch-controls" aria-label="Movement controls">{[['w','↑'],['a','←'],['s','↓'],['d','→']].map(([key,label])=><button key={key} aria-label={'Move '+({w:'forward',a:'left',s:'backward',d:'right'}[key])} onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);dispatchMove(key,true)}} onPointerUp={()=>dispatchMove(key,false)} onLostPointerCapture={()=>dispatchMove(key,false)} onPointerCancel={()=>dispatchMove(key,false)}>{label}</button>)}</div></>}</div>;
 }
