@@ -1,3 +1,4 @@
+import {createModelHandler} from './model-3d.mjs';
 import {createServer} from 'node:http';
 import {pathToFileURL} from 'node:url';
 
@@ -63,5 +64,6 @@ export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch, ba
   };
 }
 if(process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
-  createServer(createHandler()).listen(8787,'127.0.0.1',()=>console.log('Try-on API listening on http://127.0.0.1:8787'));
+  const photos=createHandler(), models=createModelHandler();
+  createServer((req,res)=>req.url?.startsWith('/api/3d/')?models(req,res):photos(req,res)).listen(8787,'127.0.0.1',()=>console.log('Try-on API listening on http://127.0.0.1:8787'));
 }

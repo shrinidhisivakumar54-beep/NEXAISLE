@@ -7,7 +7,8 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "server": "node --env-file-if-exists=.env server/try-on.mjs",
-    "test:tryon": "node --test server/try-on.test.mjs"
+    "test:tryon": "node --test server/try-on.test.mjs",
+    "test:3d": "node --test server/model-3d.test.mjs"
   },
   "dependencies": {
     "@mediapipe/pose": "0.5.1675469404",

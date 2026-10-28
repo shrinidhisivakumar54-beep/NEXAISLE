@@ -111,3 +111,29 @@ Save edits in VS Code with Cmd+S. Keep the project folder, and commit/push sourc
 5. Later GitHub updates can redeploy automatically. A custom domain is optional.
 
 This is a **static preview deployment**. It includes the studio, shopping worlds, and local camera mirror. AI lookbook generation needs a separate authenticated backend and is not enabled by Netlify's static deployment. Do not put your API key in frontend code or a VITE_ variable. The /api route returns an explicit unavailable response on this preview. Your existing local server continues to work on your Mac. No hosting account is connected to this workspace, so a public URL has not been provisioned or verified.
+
+## True 3D outfit reconstruction (Meshy)
+
+The photo lookbook now offers **Make this look 3D** under each successful outfit image. This creates an actual textured GLB mesh through Meshy, then displays it in the browser with full orbit, front/left/back/right controls, zoom, reset and optional slow rotation. Download the GLB to keep it. This is separate from the ZaoAPI photo-generation connection.
+
+### Connect the additional service
+
+1. Create a Meshy account at https://www.meshy.ai/ and obtain a Meshy API key. Confirm API access and sufficient credits in that account; image-to-3D conversion is separately billed by Meshy.
+2. Add `MESHY_API_KEY=your_meshy_key_here` to the existing private `.env` beside `package.json`. Keep the existing OPENAI/ZaoAPI lines. Never put this key in a VITE_ variable or share it in chat.
+3. Restart `npm run server`; keep `npm run dev` running in the other terminal.
+4. Generate a full-body outfit photo as before. Under that result choose **Make this look 3D**, agree to send that generated image to Meshy, and choose **Create 3D model**.
+5. Keep the fitting studio open while the task runs. Choose **View in 360°** once ready. Download before closing the studio.
+
+If the server reports the service is disconnected, its configuration status is available at `http://127.0.0.1:8787/api/3d/status`; it never prints the key.
+
+Use a clear image of one person with head and feet visible and arms separated from the torso. The model is an estimated reconstruction of the generated image, not a scan of the original person. Face, proportions, garment details and unseen surfaces can change. One model represents one outfit: changing clothes requires another conversion. It is not rigged for animation and does not simulate fabric or physical fit.
+
+### Lifecycle and verification
+
+The adapter uses Meshy's image-to-3D POST/GET contract at `https://api.meshy.ai/openapi/v1/image-to-3d`. Creation sends the generated image as a data URI, requests texturing/PBR, and returns a local task reference. Polling does not create extra paid tasks. Only one conversion runs at a time per local server. Downloading goes through the backend, with a 50 MB cap and Meshy asset-host validation; keys never go to the browser or asset host.
+
+The app stores task references only in server memory and photo/results only in the open lookbook. Closing/replacing results loses the UI reference; restarting the backend loses all task references. It does not cancel a provider task. Meshy task history is the fallback for recovery or checking uncertain submissions. Check that history before retrying an interrupted creation. No automatic paid retries are made. The app does not persist uploaded/generated photos; provider storage and retention are governed by Meshy's policies.
+
+Live Meshy conversion has **not** been verified in this environment: no Meshy key is configured. Unit tests use simulated provider responses; browser checks use a synthetic GLB fixture, not a claimed reconstruction of the user. The viewer supports self-contained uncompressed GLB with embedded images; externally linked assets and Draco/Meshopt/KTX compression report a clear unsupported-format message.
+
+Run `npm run test:3d` for the backend lifecycle tests. The static Netlify preview still does not host either AI backend. Full public use needs an authenticated, quota-controlled server before exposing paid generation routes.
