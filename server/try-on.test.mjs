@@ -22,3 +22,13 @@ test('rejects unexpected provider destinations',()=>{
   assert.throws(()=>createHandler({baseUrl:'http://api.miaoquai.com/v1'}),/OPENAI_BASE_URL/);
   assert.throws(()=>createHandler({baseUrl:'https://other.example/v1'}),/OPENAI_BASE_URL/);
 });
+test('accepts Vite loopback origins through the proxy, rejects unrelated origins',async t=>{
+  const post=await service(t,{key:'test',fetcher:()=>{throw Error('Must not generate without consent')}});
+  for(const origin of ['http://localhost:5173','http://127.0.0.1:5174','http://[::1]:5175']) {
+    const response=await post({pose:'front',consent:false},{Origin:origin});
+    assert.equal(response.status,400,origin+' should reach consent validation');
+  }
+  for(const origin of ['https://other.example','http://localhost.attacker.example:5173','http://127.0.0.1:9000','null','bad-url']) {
+    assert.equal((await post({}, {Origin:origin})).status,403,origin);
+  }
+});

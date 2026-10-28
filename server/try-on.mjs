@@ -19,8 +19,14 @@ export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch, ba
     const send=(status,data)=>{if(!res.destroyed){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));}};
     if(req.url==='/api/try-on/status' && req.method==='GET') return send(200,{available:!!key,provider,model});
     if(req.url!=='/api/try-on' || req.method!=='POST') return send(404,{error:'Not found'});
-    // This development service is loopback-only. Reject cross-origin browser calls.
-    try {if(req.headers.origin && new URL(req.headers.origin).host!==req.headers.host) return send(403,{error:'Origin not allowed.'});}
+    // Vite may forward its browser Origin while using the API's Host header.
+    // Allow local development ports only, never arbitrary forwarded origins.
+    try {if(req.headers.origin) {
+      const origin=new URL(req.headers.origin);
+      const localDev=origin.protocol==='http:' && ['localhost','127.0.0.1','[::1]'].includes(origin.hostname) && Number(origin.port)>=5173 && Number(origin.port)<=5199;
+      const sameOrigin=['http:','https:'].includes(origin.protocol) && origin.host===req.headers.host;
+      if(!localDev&&!sameOrigin) return send(403,{error:'Origin not allowed. Open the website using the Local URL printed by npm run dev (ports 5173–5199).'});
+    }}
     catch {return send(403,{error:'Origin not allowed.'});}
     if(!key) return send(503,{error:'AI generation is not connected yet. The site owner needs to configure the server API key.'});
     if(active || Date.now()-lastStarted<3000) return send(429,{error:'Please wait for the current generation before trying again.'});
