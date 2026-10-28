@@ -1,5 +1,6 @@
 import {defineConfig} from 'vite';
-export default defineConfig({server:{proxy:{'/api':{
+const studioRoute=(server)=>{server.middlewares.use((req,_res,next)=>{if(req.url==='/projects'||req.url==='/projects/')req.url='/projects/index.html';next();});};
+export default defineConfig({plugins:[{name:'studio-route',configureServer:studioRoute,configurePreviewServer:studioRoute}],server:{proxy:{'/api':{
   target:'http://127.0.0.1:8787',
   timeout:210_000,
   proxyTimeout:210_000,

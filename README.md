@@ -91,3 +91,23 @@ npm run build
 `src/style.css`: responsive styling.
 
 Fonts fall back to system fonts if Google Fonts is unavailable. Use a WebGL-capable browser with hardware acceleration for best performance.
+
+## Shrinidhi Project Studio
+
+Your projects homepage is at **/projects/** on the same website. Locally, start `npm run dev` and add `/projects/` to the Local URL Vite prints. NEXAISLE is the first project, with direct links to its fashion and grocery worlds.
+
+Edit `public/projects/index.html` to update the studio name, text, or project cards. Styles are in `public/projects/studio.css`; screenshots are in `public/projects/images/`. The next-project panel is editorial text, not a live project or a button.
+
+### Save and back up
+
+Save edits in VS Code with Cmd+S. Keep the project folder, and commit/push source changes to GitHub for an online backup. Keep `.env` private; it is intentionally excluded from Git. The repository does not back up that file. On a new computer, install Node, run `npm install`, and recreate your private `.env`.
+
+### Publish a shareable studio and shopping demo on Netlify
+
+1. Sign in to Netlify and choose Add new project → Import an existing project.
+2. Connect GitHub and select `shrinidhisivakumar54-beep/NEXAISLE`, branch `main`.
+3. Build command: `npm run build`. Publish directory: `dist`. These are also configured in `netlify.toml`.
+4. Deploy. Netlify assigns the actual public URL; append `/projects/` to open the studio. Use that full address as your portfolio link.
+5. Later GitHub updates can redeploy automatically. A custom domain is optional.
+
+This is a **static preview deployment**. It includes the studio, shopping worlds, and local camera mirror. AI lookbook generation needs a separate authenticated backend and is not enabled by Netlify's static deployment. Do not put your API key in frontend code or a VITE_ variable. The /api route returns an explicit unavailable response on this preview. Your existing local server continues to work on your Mac. No hosting account is connected to this workspace, so a public URL has not been provisioned or verified.
