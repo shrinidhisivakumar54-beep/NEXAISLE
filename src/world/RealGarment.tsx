@@ -19,9 +19,9 @@ const modelUrls: Record<string,string> = {
   f4: 'https://cdn.3dassets.dev/assets/35455/v1/model.glb', // dress
   f6: 'https://cdn.3dassets.dev/assets/35448/v1/model.glb', // shirt
   f7: 'https://cdn.3dassets.dev/assets/35451/v1/model.glb', // knitwear
-  f8: 'https://cdn.3dassets.dev/assets/35453/v1/model.glb', // coat
-  f9: 'https://cdn.3dassets.dev/assets/35456/v1/model.glb', // long dress as style reference
-  f10: 'https://cdn.3dassets.dev/assets/35454/v1/model.glb' // utility vest reference
+  f8: 'https://cdn.3dassets.dev/assets/35453/v1/model.glb' // coat
+  // Skirt and utility vest use type-correct local fallback silhouettes instead of
+  // falsely presenting a dress or jacket as the selected product.
 };
 
 const loader = new GLTFLoader();
@@ -58,7 +58,7 @@ export function RealGarment({product}:{product:Product}) {
     return ()=>{active=false};
   },[url,product.name]);
   const model=useMemo(()=>loaded?.url===url?loaded.model:null,[loaded,url]);
-  if (!model) return <group position={[0,-.50,0]}><Garment product={product} /></group>;
+  if (!model) return <group position={[0,-.79,0]}><Garment product={product} /></group>;
   // GLB hook pivot is at [0,0,0], so when placed at rail Y the garment hangs below it.
   return <primitive object={model}/>;
 }
