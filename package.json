@@ -1,1 +1,32 @@
-{"name":"nexaisle","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"tsc -b && vite build"},"dependencies":{"@mediapipe/pose":"0.5.1675469404","@react-three/drei":"^10.7.6","@react-three/fiber":"^9.4.0","lucide-react":"^0.468.0","motion":"^12.23.0","react":"^19.1.1","react-dom":"^19.1.1","react-router-dom":"^7.9.0","three":"^0.180.0","zustand":"^5.0.8"},"devDependencies":{"@types/react":"^19.1.0","@types/react-dom":"^19.1.0","@types/three":"^0.180.0","@vitejs/plugin-react":"^5.0.0","typescript":"~5.9.3","vite":"^7.1.0"}}
+{
+  "name": "nexaisle",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "server": "node --env-file-if-exists=.env server/try-on.mjs",
+    "test:tryon": "node --test server/try-on.test.mjs"
+  },
+  "dependencies": {
+    "@mediapipe/pose": "0.5.1675469404",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
+    "lucide-react": "^0.468.0",
+    "motion": "^12.23.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.0",
+    "three": "^0.180.0",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.0"
+  }
+}

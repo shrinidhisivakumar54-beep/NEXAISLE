@@ -1,6 +1,6 @@
 # NEXAISLE — interactive 3D shopping
 
-A React + TypeScript + Vite + React Three Fiber concept. No paid API keys needed.
+A React + TypeScript + Vite + React Three Fiber concept. Shopping and the local mirror need no API key. Optional AI photo generation requires a paid server-side image API key.
 
 ![Fashion World showroom](docs/fashion-showroom.png)
 
@@ -25,15 +25,34 @@ Open the **Local** address Vite prints. Keep that terminal running. Node.js 20.1
 - A visible **Nova** employee can be clicked in the scene. Ask a product question, use browser text-to-speech, inspect the result, or move directly to its aisle/rack entrance. The assistant searches the actual active level catalogue. Employee follow-me navigation and microphone input are not implemented.
 - Shared localStorage avatar colours, grocery/fashion cart, clothing sizes, demo orders and animated paper receipts. Checkout is a demo: no payments or real orders. Receipts can be printed or saved as PDF with your browser.
 
-Grocery World and avatars use original procedural geometry and canvas-generated labels. Fashion World uses a hybrid 2.5D/3D presentation with AI-generated garment cutouts (see `public/fashion/README.md`), not scans of physical inventory or garment fit simulations. NPCs do not collide with other people. The paper receipt is a 2D reveal, not a physical 3D printer. No backend or multiplayer service is connected.
+Grocery World and avatars use original procedural geometry and canvas-generated labels. Fashion World uses a hybrid 2.5D/3D presentation with AI-generated garment cutouts (see `public/fashion/README.md`), not scans of physical inventory or garment fit simulations. NPCs do not collide with other people. The paper receipt is a 2D reveal, not a physical 3D printer. No multiplayer service is connected. An optional local backend supports AI photo generation.
 
 ![Grocery World with the shared theme](docs/grocery-world.png)
+
+## AI photo lookbook (optional)
+
+Click a garment → **CREATE MY AI LOOKBOOK**. Upload a clear full-body JPG, PNG or WebP (up to 10 MB), select a garment and one to three poses, agree to send the photo for generation, and choose **Generate**. Completed images can be enlarged and downloaded. Each pose makes a separate paid image request. Images are not saved in this app's database or localStorage; closing the studio clears them. The external provider's data policies apply after generation is requested.
+
+To enable generation locally in VS Code:
+
+1. Copy `.env.example` to `.env` in the project folder.
+2. Set `OPENAI_API_KEY` in that file to your own API key with image-generation access and billing. Do not paste it into chat or use a `VITE_` variable. `.env` is ignored by Git.
+3. In one terminal run `npm run server` (Node 20.19+). In another run `npm run dev`.
+4. Open Vite's Local URL. Vite forwards `/api` to the loopback server on port 8787.
+
+The server calls OpenAI's `gpt-image-1` image-edit endpoint with the person photo and a transparent crop of the selected garment, requesting high-fidelity input, natural drape, preserved identity and the chosen pose. It validates request size, pose and consent, limits concurrent requests, times out after three minutes, and does not persist photos or expose the API key to the browser. Uploading alone makes no generation request. Cancellation stops remaining poses, but an already-submitted provider request may still incur a charge.
+
+**Status:** UI and API contract tested with simulated provider responses; real image generation has not been verified in this environment because no image API key is configured and `api.openai.com` is not allowed by its current network policy. No fabricated generated results are shown when disconnected. The camera mirror remains available.
+
+Results are AI illustrations, not guaranteed identity-perfect images, garment fidelity or real size/fit predictions. Back-side garment details are unavailable and may be invented. Poses are still photographs, not animation or video. The current backend binds only to localhost and is intended for local development. Before public hosting, provide an authenticated backend with per-user quotas, billing controls and HTTPS; a static-only/StackBlitz preview cannot provide this secret-backed service. Never expose the development API publicly as an unrestricted paid-generation endpoint.
+
+Validation: `npm run build` and `npm run test:tryon`.
 
 ## Camera try-on
 
 ![Camera try-on](docs/camera-try-on.png)
 
-Click a garment, choose **TRY ON WITH CAMERA**, then click **USE CAMERA** and allow camera access. The camera only starts after that click. You can also upload a photo instead.
+Click a garment, choose **CREATE MY AI LOOKBOOK**, select **Use the local camera mirror**, then click **USE CAMERA** and allow camera access. The camera only starts after that click. You can also upload a photo instead.
 
 The selected garment's actual atlas cutout is overlaid on live video or your photo. Drag it, adjust overlay scale/position/opacity, choose the clothing size for your bag, switch garments, or freeze a photo. It is a landmark-aligned visual styling preview, not automatic cloth draping or an accurate size/fit prediction. Uploaded/frozen photos are checked locally for shoulders and waist with MediaPipe Pose. For live video, use **AUTO-ALIGN BODY** to sample the current pose; this is not continuous body tracking. Keep both shoulders and your waist visible. If detection fails, choose **SET 3 BODY POINTS**, then tap the shoulder on the left side of the photo, the shoulder on the right, and waist center. Automatic shoulder fitting is available for tops, dresses and coats; bottoms and shoes retain manual controls. Garment width and length are fitted independently; length and shoulder tilt can be refined separately. The overlay is now clipped to the photo itself, including when the preview is letterboxed. Photos stay in browser memory, and closing the mirror stops the camera. No external try-on API is used. The pose runtime and lite model are served from `public/pose` and run on your device; no photo is sent out for detection. These model files add about 18 MB to the project. `node scripts/copy-pose-assets.mjs` refreshes those unmodified files from the pinned npm dependency after installation. See `public/pose/LICENSE.txt` for the Apache-2.0 license. Arm occlusion, removal of your original clothing and realistic cloth replacement are not implemented; those require a more advanced virtual try-on renderer.
 
