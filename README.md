@@ -48,6 +48,20 @@ Results are AI illustrations, not guaranteed identity-perfect images, garment fi
 
 Validation: `npm run build` and `npm run test:tryon`.
 
+## Connect ZaoAPI
+
+In the project folder, create a private `.env` beside `package.json`:
+
+```env
+OPENAI_API_KEY=your_zaoapi_key_here
+OPENAI_BASE_URL=https://api.miaoquai.com/v1
+OPENAI_IMAGE_MODEL=gpt-image-1
+```
+
+Run `npm run server` and `npm run dev` in separate terminals, then refresh the website. Restart the server after changing `.env`. The variable name OPENAI_API_KEY is retained for compatibility; its value here is your ZaoAPI key. Photo consent identifies ZaoAPI as the recipient.
+
+ZaoAPI's model catalogue was confirmed by the user's local test to list gpt-image-1. Actual two-image editing remains unverified: this adapter assumes the OpenAI-compatible POST /v1/images/edits contract and base64 image response. Mock tests verify routing and request construction only. If generation fails, the UI reports the provider HTTP status without exposing credentials. The server does not fall back to another provider or follow credential-bearing redirects.
+
 ## Camera try-on
 
 ![Camera try-on](docs/camera-try-on.png)

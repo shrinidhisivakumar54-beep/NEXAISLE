@@ -8,13 +8,16 @@ function image(value) {
   if(!match) throw new Error('Use a JPG, PNG or WebP image.');
   return new Blob([Buffer.from(match[2], 'base64')], {type:`image/${match[1]}`});
 }
-export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch}={}) {
+export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch, baseUrl=process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1', model=process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1'}={}) {
+  const base=baseUrl.replace(/\/+$/, '');
+  if(!['https://api.openai.com/v1','https://api.miaoquai.com/v1'].includes(base)) throw new Error('OPENAI_BASE_URL must be the OpenAI or ZaoAPI HTTPS /v1 address.');
+  const provider=base.includes('miaoquai.com')?'ZaoAPI':'OpenAI';
   let active=false;
   let lastStarted=0;
   return async (req,res) => {
     res.setHeader('Cache-Control','no-store');
     const send=(status,data)=>{if(!res.destroyed){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));}};
-    if(req.url==='/api/try-on/status' && req.method==='GET') return send(200,{available:!!key});
+    if(req.url==='/api/try-on/status' && req.method==='GET') return send(200,{available:!!key,provider,model});
     if(req.url!=='/api/try-on' || req.method!=='POST') return send(404,{error:'Not found'});
     // This development service is loopback-only. Reject cross-origin browser calls.
     try {if(req.headers.origin && new URL(req.headers.origin).host!==req.headers.host) return send(403,{error:'Origin not allowed.'});}
@@ -34,12 +37,12 @@ export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch}={}
       let person, garment;
       try {person=image(input.person);garment=image(input.garment);} catch(error) {return send(400,{error:error.message});}
       const form=new FormData();
-      form.set('model','gpt-image-1');form.set('size','1024x1536');form.set('quality','high');form.set('input_fidelity','high');form.set('n','1');
+      form.set('model',model);form.set('size','1024x1536');form.set('quality','high');form.set('input_fidelity','high');form.set('n','1');
       form.append('image[]',person,'person.png');form.append('image[]',garment,'garment.png');
       form.set('prompt',`Create a photorealistic full-body fashion try-on photograph. Image 1 is the person: preserve their identity, face, skin tone, body proportions, age and hair. Image 2 is the garment reference: dress the person in this exact garment, preserving its colour, graphic, neckline, sleeves, texture and silhouette. Replace only the corresponding clothing; retain complementary clothing and shoes. No hangers. Fit naturally to the body with realistic folds, lighting, shadows and correct arm/hair occlusion. Pose: ${poses[input.pose]}. Keep the whole person including head and feet in frame in a softly lit ivory studio. One person, one image, no collage, no text. Do not change their body shape or beautify their face. This is an illustrative styling image.`);
       lastStarted=Date.now();
-      const response=await fetcher('https://api.openai.com/v1/images/edits',{method:'POST',headers:{Authorization:`Bearer ${key}`},body:form,signal:controller.signal});
-      if(!response.ok) return send(502,{error:response.status===429?'The image service is busy or its quota is exhausted. Try later.':'The image service could not generate this look. Check the server account or try another photo.'});
+      const response=await fetcher(base+'/images/edits',{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${key}`},body:form,signal:controller.signal});
+      if(!response.ok) return send(502,{error:response.status===429?'The image service is busy or its quota is exhausted. Try later.':`${provider} image editing returned HTTP ${response.status}. Check that this key and model support /v1/images/edits with two images.`});
       const result=await response.json();
       if(!result.data?.[0]?.b64_json) throw new Error('No image returned');
       send(200,{image:`data:image/png;base64,${result.data[0].b64_json}`});
