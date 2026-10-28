@@ -2,15 +2,10 @@ import { Component, Suspense, useEffect, useRef, useState, type CSSProperties, t
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, MessageCircle, RotateCcw } from 'lucide-react';
 import { RailScene } from './RailScene';
 import { atlasUrl, pieces, railPieces, pieceProduct, type EditorialPiece } from './collection';
+import GarmentPhoto from './GarmentPhoto';
 import { money, type Product } from '../store';
 import './fashion.css';
 
-export function GarmentPhoto({piece,className=''}:{piece:EditorialPiece;className?:string}) {
-  const [l,t,r,b]=piece.crop;
-  return <div className={'fashion-cutout '+className} style={{aspectRatio:`${r-l} / ${b-t}`}} role="img" aria-label={pieceProduct(piece).name}>
-    <img src={atlasUrl} alt="" draggable={false} style={{width:`${1536/(r-l)*100}%`,height:`${1024/(b-t)*100}%`,left:`${-l/(r-l)*100}%`,top:`${-t/(b-t)*100}%`}}/>
-  </div>;
-}
 class RailBoundary extends Component<{children:ReactNode;fallback:ReactNode},{failed:boolean}> {
   state={failed:false};static getDerivedStateFromError(){return {failed:true}}
   render(){return this.state.failed?this.props.fallback:this.props.children}
@@ -36,7 +31,7 @@ export default function FashionShowroom({onProduct,onAssistant,focusRack,focusPr
       <div className="fashion-rail-scroll" ref={scroll}>
         <div className={'fashion-rail-stage '+(assets==='loading'?'is-loading':'')}>
           {assets==='ready'?(can3d?<RailBoundary fallback={flatRail}><Suspense fallback={<div className="rail-loading">Preparing the rail…</div>}><RailScene pieces={filtered} active={active}/></Suspense></RailBoundary>:flatRail):<div className="rail-loading">{assets==='error'?<>The collection imagery couldn’t load. <button onClick={()=>window.location.reload()}>Try again</button></>:'Unfolding the collection…'}</div>}
-          {assets==='ready'&&<div className="rail-targets">{filtered.map((piece,index)=><button key={piece.id} className="rail-target" style={{left:positionPercent(index,filtered.length)+'%'}} onMouseEnter={()=>activate(piece.id)} onMouseLeave={leavePiece} onFocus={()=>activate(piece.id)} onClick={()=>activate(piece.id)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onProduct(pieceProduct(piece))}}} aria-pressed={active===piece.id} aria-label={`Discover ${pieceProduct(piece).name}`}><span>{pieceProduct(piece).name}</span></button>)}</div>}
+          {assets==='ready'&&<div className="rail-targets">{filtered.map((piece,index)=><button key={piece.id} className="rail-target" style={{left:positionPercent(index,filtered.length)+'%'}} onMouseEnter={()=>activate(piece.id)} onMouseLeave={leavePiece} onFocus={()=>activate(piece.id)} onClick={()=>{activate(piece.id);onProduct(pieceProduct(piece))}} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onProduct(pieceProduct(piece))}}} aria-pressed={active===piece.id} aria-label={`Discover ${pieceProduct(piece).name}`}><span>{pieceProduct(piece).name}</span></button>)}</div>}
           {chosen&&<div className="rail-product-caption" onMouseEnter={()=>clearTimeout(leaveTimer.current)} onMouseLeave={leavePiece} style={{left:`clamp(115px, ${positionPercent(filtered.indexOf(chosen),filtered.length)}%, calc(100% - 115px))`}} aria-live="polite"><div><h3>{pieceProduct(chosen).name}</h3><span>{money(pieceProduct(chosen).price)}</span></div><p><span className="fashion-shade" style={{background:chosen.color}}/>{chosen.shade} <small> / 1 shade</small></p><button onClick={()=>onProduct(pieceProduct(chosen))}>VIEW PRODUCT <ArrowUpRight size={13}/></button></div>}
         </div>
       </div>
