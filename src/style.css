@@ -5,3 +5,43 @@
 @media(max-width:760px){.shop-scene{height:520px}.scene-actions{flex-direction:column;gap:5px;align-items:flex-end}.scene-actions .secondary{font-size:7px;min-height:30px}.view-switch{left:10px;bottom:65px}.view-switch button{font-size:7px;padding:8px}.touch-controls{right:10px;bottom:65px;grid-template-columns:repeat(3,30px)}.touch-controls button{height:30px}.scene-bottom{font-size:6px;min-height:45px}.employee-label{padding:8px 10px;font-size:10px}.employee-label small{font-size:6px}.product-modal{display:block;overflow:auto;max-height:92dvh;width:480px}.inspection-canvas{height:310px}.product-details{padding:25px;max-height:none}.product-modal h2{font-size:27px}.product-modal>.close{position:sticky;top:10px;float:right;margin:10px 10px -45px 0}.inspection-canvas>span{font-size:6px}.aisle-directory{gap:6px}.aisle-directory>span{min-width:65px;font-size:7px}.page-title{margin-bottom:18px}.catalogue-header{margin-top:23px}}
 .shelf-tooltip small{display:block;font-size:8px;color:#c7ff32;margin-top:5px}.employee-label:before{content:'';display:inline-block;width:6px;height:6px;background:#c7ff32;border-radius:50%;margin-right:7px}
 .product-art.clothing.dress>span{height:58px;width:42px;clip-path:polygon(28% 0,72% 0,65% 37%,100% 100%,0 100%,35% 37%)}.product-art.clothing.trousers>span{height:51px;width:34px;clip-path:polygon(0 0,100% 0,95% 100%,57% 100%,50% 32%,43% 100%,5% 100%)}.product-art.clothing.shoes>span{height:28px;width:48px;clip-path:polygon(5% 0,35% 0,45% 45%,88% 55%,100% 80%,95% 100%,0 100%);border-bottom:4px solid #d0cfc3}.product-art.grocery-bottle>span{width:22px;border-radius:9px 9px 4px 4px}.product-art.grocery-bottle>span:before{content:'';position:absolute;background:#cf5645;width:9px;height:7px;top:-5px;left:6px;border-radius:2px}.product-art.grocery-jar>span{height:28px;width:30px;border-radius:4px 4px 7px 7px;border-top:4px solid #b6b5a7}.product-art.grocery-jar>span:after{top:5px}.product-art.grocery-produce>span{width:32px;height:31px;border-radius:45% 48% 50% 50%;background:#83a64d}.product-art.grocery-produce>span:before{content:'';position:absolute;background:#688039;width:5px;height:8px;top:-5px;left:15px;transform:rotate(20deg)}.product-art.grocery-produce>span:after{display:none}
+
+
+/* NEXAISLE fashion editorial + privacy-first style mirror */
+.editorial-rail{height:315px;position:relative;overflow:hidden;background:#111827;margin-bottom:26px;border:1px solid #394055}
+.editorial-rail-photo{position:absolute;inset:0;background-position:center 44%;background-size:cover;filter:saturate(.78)}
+.editorial-rail-copy{position:relative;z-index:1;padding:45px 55px;max-width:460px}
+.editorial-rail-copy>span,.tryon-header small{font-size:10px;letter-spacing:2px;color:#c7ff32}
+.editorial-rail-copy h3{font-size:clamp(35px,4vw,55px);letter-spacing:-2px;margin:18px 0}
+.editorial-rail-copy h3 em{color:#c7ff32;font-family:Georgia,serif;font-weight:400}
+.editorial-rail-copy p{max-width:320px;font-size:11px;line-height:1.8;color:#b5bfd0;margin-bottom:18px}
+.editorial-product-photo{width:82px;height:104px;flex-shrink:0;overflow:hidden;background:#dedbd4}
+.editorial-product-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.tryon-button{width:100%;margin-top:12px;border-color:#c7ff32;color:#c7ff32}
+.tryon-backdrop{position:fixed;inset:0;z-index:80;background:#010307e9;backdrop-filter:blur(12px);overflow:auto;display:grid;place-items:center;padding:20px}
+.tryon-dialog{background:#090f19;border:1px solid #354363;width:min(1050px,100%);max-height:94dvh;overflow:auto;box-shadow:0 28px 110px #000c}
+.tryon-header{display:flex;align-items:start;justify-content:space-between;padding:26px 32px;border-bottom:1px solid #ffffff1b}
+.tryon-header h2{font-size:36px;letter-spacing:-1.5px;margin:9px 0}
+.tryon-header h2 span{color:#c7ff32}.tryon-header p{font-size:12px;color:#9ba8c1}
+.tryon-close{padding:8px;border:1px solid #ffffff40;border-radius:50%}
+.tryon-grid{display:grid;grid-template-columns:1.1fr 1fr;min-height:570px}
+.tryon-preview{position:relative;min-height:570px;background:radial-gradient(ellipse at center,#263556,#0b1222 68%);overflow:hidden;display:grid;place-items:center}
+.tryon-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.tryon-empty{display:flex;flex-direction:column;align-items:center;gap:15px;text-align:center;padding:35px;color:#c7d0de}.tryon-empty svg{color:#c7ff32}.tryon-empty b{font-size:21px}.tryon-empty small{max-width:270px;font-size:12px;line-height:1.6;color:#93a3bb}
+.tryon-privacy{position:absolute;left:16px;bottom:16px;background:#060c19cc;padding:9px 12px;font-size:9px;letter-spacing:1px;color:#c7ff32}
+.tryon-overlay-garment{position:absolute;top:35%;left:50%;width:38%;height:30%;clip-path:polygon(20% 0%,38% 4%,50% 10%,62% 4%,80% 0,100% 20%,84% 40%,75% 30%,76% 100%,24% 100%,25% 30%,16% 40%,0 20%);box-shadow:inset 0 0 50px #0005;pointer-events:none;display:grid;place-items:end center;padding-bottom:8px;transform-origin:50% 0}
+.tryon-overlay-garment.long{height:48%;clip-path:polygon(23% 0%,77% 0%,72% 30%,100% 100%,0 100%,28% 30%)}
+.tryon-overlay-garment.bottom{top:57%;height:36%;clip-path:polygon(12% 0,88% 0,98% 100%,55% 100%,50% 26%,45% 100%,2% 100%)}
+.tryon-overlay-garment.footwear{top:82%;height:13%;clip-path:polygon(10% 0%,42% 0%,48% 52%,53% 0%,87% 0%,100% 87%,0 87%)}
+.tryon-overlay-garment span{font-size:8px;color:#101510;background:#ffffffbb;padding:3px;max-width:80%;text-align:center}
+.tryon-options{padding:30px;overflow:auto}.tryon-product{display:flex;gap:17px;align-items:center}
+.tryon-product img{width:105px;height:130px;object-fit:cover;background:#c6c9cd}
+.tryon-product small{font-size:9px;color:#c7ff32;letter-spacing:1px}.tryon-product h3{font-size:24px;line-height:1.15;margin:10px 0}.tryon-product span{font-size:10px;line-height:1.6;color:#aab7ca}
+.tryon-note{font-size:11px;color:#9cacca;line-height:1.8;margin:20px 0}
+.tryon-actions{display:flex;gap:10px;flex-wrap:wrap}.tryon-actions button{flex:1;min-width:145px;gap:10px}
+.tryon-link{display:block;text-decoration:underline;margin:12px 0;font-size:11px}.tryon-error{color:#ff9c9c;font-size:12px;margin:12px 0}
+.tryon-sliders{padding:20px 0;display:grid;gap:17px}.tryon-sliders label{font-size:10px;color:#b9c7d9;letter-spacing:1px;display:flex;flex-wrap:wrap;justify-content:space-between}
+.tryon-sliders input{display:block;flex-basis:100%;accent-color:#c7ff32;margin-top:13px}
+.tryon-footer{display:flex;flex-wrap:wrap;gap:14px;border-top:1px solid #ffffff22;padding-top:20px}
+.tryon-footer button{display:flex;gap:7px;align-items:center;font-size:10px;color:#c7ff32}
+@media(max-width:800px){.tryon-grid{grid-template-columns:1fr}.tryon-preview{min-height:370px}.tryon-dialog{max-height:96dvh}.tryon-header{padding:18px}.tryon-options{padding:20px}.editorial-rail{height:300px}.editorial-rail-copy{padding:30px}.editorial-product-photo{width:55px;height:76px}}
