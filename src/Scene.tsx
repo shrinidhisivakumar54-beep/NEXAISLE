@@ -5,6 +5,8 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from 'three';
 import { products, type Product } from './store';
 import { Avatar, Trolley, Box, Tube, Sign, Garment, GroceryModel, PriceTag, type Vec3 } from './world/Models';
+import { FashionProductViewer } from './fashion/RailScene';
+import { findPiece } from './fashion/collection';
 import { aisleNames, aislePosition, rackPosition, isBlocked } from './world/layout';
 export { Avatar } from './world/Models';
 type View = 'walk'|'overview';
@@ -64,7 +66,8 @@ function Shop({fashion,onProduct,onAssistant,view,focusAisle,navigationKey,pause
  return <><Architecture fashion={fashion}/>{fashion?Array.from({length:4},(_,i)=><ClothingRack key={i} rack={i+1} onProduct={onProduct}/>):Array.from({length:8},(_,i)=><Shelf key={i} aisle={i+1} onProduct={onProduct} active={focusAisle===i+1}/>)}{Array.from({length:4},(_,i)=><Shopper key={i} index={i} fashion={fashion}/>)}<Employee fashion={fashion} onAssistant={onAssistant}/><Player fashion={fashion} view={view} focusAisle={focusAisle} navigationKey={navigationKey} paused={paused}/></>;
 }
 export function ProductViewer({product}:{product:Product}) {
- return <div className="inspection-canvas"><Canvas shadows dpr={[1,1.5]} camera={{position:[0,.25,3.3],fov:36}}><color attach="background" args={['#e6e2d9']}/><ambientLight intensity={1.8}/><directionalLight position={[3,5,4]} intensity={3} castShadow/><directionalLight position={[-3,2,-1]} intensity={2}/><group position={[0,product.level==='fashion'?.1:-.25,0]}>{product.level==='fashion'?<Garment product={product}/>:<group scale={1.6}><GroceryModel product={product}/></group>}</group><ContactShadows position={[0,-1.02,0]} scale={6} opacity={.3} blur={2}/><OrbitControls makeDefault target={[0,0,0]} minDistance={1.3} maxDistance={5} enablePan={false}/></Canvas><span>GENUINE 3D VIEW · DRAG TO ROTATE · SCROLL TO ZOOM</span></div>;
+ if(product.level==='fashion'){const piece=findPiece(product.id);return piece?<FashionProductViewer piece={piece}/>:<div className="fashion-photo-unavailable">Photography for this archived piece is not available yet.</div>}
+ return <div className="inspection-canvas"><Canvas shadows dpr={[1,1.5]} camera={{position:[0,.25,3.3],fov:36}}><color attach="background" args={['#e6e2d9']}/><ambientLight intensity={1.8}/><directionalLight position={[3,5,4]} intensity={3} castShadow/><directionalLight position={[-3,2,-1]} intensity={2}/><group position={[0,-.25,0]}><group scale={1.6}><GroceryModel product={product}/></group></group><ContactShadows position={[0,-1.02,0]} scale={6} opacity={.3} blur={2}/><OrbitControls makeDefault target={[0,0,0]} minDistance={1.3} maxDistance={5} enablePan={false}/></Canvas><span>GENUINE 3D VIEW · DRAG TO ROTATE · SCROLL TO ZOOM</span></div>;
 }
 export default function Scene({mode,onProduct,onAssistant,focusAisle,navigationKey,paused}:Props) {
  const home=mode==='home',studio=home||mode==='avatar';const [view,setView]=useState<View>('walk');useEffect(()=>{if(focusAisle)setView('walk')},[focusAisle,navigationKey]);
