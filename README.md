@@ -2,6 +2,8 @@
 
 A React + TypeScript + Vite + React Three Fiber concept. No paid API keys needed.
 
+![Fashion World showroom](docs/fashion-showroom.png)
+
 ## Open the website
 
 Unzip the GitHub download, open the extracted folder in VS Code, then open **Terminal → New Terminal**:

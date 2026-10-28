@@ -2,3 +2,4 @@
 .product-modal.fashion-product-modal{background:#f5f4ef;color:#293e5e}.fashion-product-modal .fashion-detail-shade{display:flex;gap:8px;align-items:center;font-size:9px;margin:-12px 0 23px}.fashion-page .toast{color:#edf5dc}.fashion-page .toast button{color:#c7ff32}
 .fashion-page .assistant{color:#f5f7ff}
 .fashion-rail-stage>div:first-child{pointer-events:none;touch-action:auto}.rail-target{touch-action:pan-x pan-y}.rail-target:hover{cursor:pointer}
+.fashion-product-modal .tryon-button{color:#3b5774;border-color:#aebdc1;font-size:8px;letter-spacing:1px}
