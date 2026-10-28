@@ -67,7 +67,7 @@ export function RealGarment({product}:{product:Product}) {
     });
     return ()=>{active=false};
   },[url,product.name]);
-  const model=useMemo(()=>loaded?.url===url?loaded.model:null,[loaded,url]);
+  const model=useMemo(()=>loaded !== null && typeof url === 'string' && loaded.url === url ? loaded.model : null,[loaded,url]);
   if (!model) return <group position={[0,-.79,0]}><Garment product={product} /></group>;
   // GLB hook pivot is at [0,0,0], so when placed at rail Y the garment hangs below it.
   return <GarmentRenderBoundary product={product}><primitive object={model}/></GarmentRenderBoundary>;
