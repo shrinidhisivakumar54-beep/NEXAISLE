@@ -43,3 +43,13 @@ test('unsupported image response is distinguished from network failure',async t=
   const response=await post({person:pixel,garment:pixel,pose:'front',consent:true});
   assert.match((await response.json()).error,/no base64 image/);
 });
+test('connection errors expose only known safe diagnostic codes',async t=>{
+  const post=await service(t,{key:'test',fetcher:async()=>{throw new TypeError('private-secret',{cause:{code:'UND_ERR_SOCKET',message:'private-url'}})}});
+  const response=await post({person:pixel,garment:pixel,pose:'front',consent:true});
+  const data=await response.json();assert.equal(data.code,'UND_ERR_SOCKET');assert.match(data.error,/UND_ERR_SOCKET/);assert.doesNotMatch(JSON.stringify(data),/private/);
+});
+test('unknown error codes cannot leak exception values',async t=>{
+  const post=await service(t,{key:'test',fetcher:async()=>{throw new Error('private',{cause:{code:'private-secret'}})}});
+  const data=await (await post({person:pixel,garment:pixel,pose:'front',consent:true})).json();
+  assert.equal(data.code,'CONNECTION_FAILED');assert.doesNotMatch(JSON.stringify(data),/private/);
+});

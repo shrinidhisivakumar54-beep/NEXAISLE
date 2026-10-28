@@ -3,6 +3,8 @@ import {createServer} from 'node:http';
 import {pathToFileURL} from 'node:url';
 
 export const poses = {front:'standing facing the camera, arms relaxed slightly away from torso', turn:'a natural three-quarter turn toward the camera', walk:'a relaxed walking pose, full body visible'};
+// Only known codes are exposed: exception text can contain URLs or secrets.
+const connectionCodes=new Set(['UND_ERR_CONNECT_TIMEOUT','UND_ERR_HEADERS_TIMEOUT','UND_ERR_BODY_TIMEOUT','UND_ERR_SOCKET','ECONNRESET','ECONNREFUSED','ETIMEDOUT','ENOTFOUND','EAI_AGAIN','ERR_INVALID_CHAR','ERR_INVALID_ARG_TYPE']);
 function image(value) {
   if(typeof value !== 'string' || value.length > 8_000_000) throw new Error('Choose a smaller photo.');
   const match = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(value);
@@ -56,9 +58,11 @@ export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch, ba
       if(!result?.data?.[0]?.b64_json) return send(502,{error:`${provider} returned no base64 image. Its response format may differ from the supported image-editing API. Check provider request history before retrying.`});
       send(200,{image:`data:image/png;base64,${result.data[0].b64_json}`});
     } catch(error) {
-      const code=error?.cause?.code;
+      const code=error?.cause?.code||error?.code;
       const certificate=['UNABLE_TO_GET_ISSUER_CERT_LOCALLY','UNABLE_TO_VERIFY_LEAF_SIGNATURE','CERT_HAS_EXPIRED','SELF_SIGNED_CERT_IN_CHAIN'].includes(code);
-      send(502,{error:controller.signal.aborted?'Generation timed out or was cancelled. Check provider request history before retrying.':certificate?'The server could not verify the image provider’s HTTPS certificate. Update Node.js or configure its trusted CA certificates; do not disable certificate verification.':`Could not complete the connection to ${provider}. Check the connection and provider request history before retrying.`});
+      const diagnostic=controller.signal.aborted?'REQUEST_INTERRUPTED':certificate?'CERTIFICATE_VERIFY_FAILED':connectionCodes.has(code)?code:error?.cause?.message==='unexpected redirect'?'REDIRECT_REJECTED':'CONNECTION_FAILED';
+      const detail=controller.signal.aborted?'Generation timed out or was cancelled.':certificate?'The server could not verify the image provider’s HTTPS certificate. Update Node.js or configure its trusted CA certificates; do not disable certificate verification.':`Could not complete the image-editing connection to ${provider}.`;
+      send(502,{code:diagnostic,error:`${detail} [${diagnostic}] Check provider request history before retrying. Share this error code for troubleshooting; do not share your API key.`});
     }
     finally {clearTimeout(timer);active=false;}
   };
