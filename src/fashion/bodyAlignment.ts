@@ -1,6 +1,6 @@
 import type { Pose, Results } from '@mediapipe/pose';
 export type Point={x:number;y:number};
-export type BodyAnchors={left:Point;right:Point;waist:Point};
+export type BodyAnchors={left:Point;right:Point;waist:Point;hipLeft?:Point;hipRight?:Point;kneeLeft?:Point;kneeRight?:Point;ankleLeft?:Point;ankleRight?:Point;confidence?:'full'|'upper'|'manual'};
 let loading:Promise<void>|null=null;
 let queue:Promise<unknown>=Promise.resolve();
 declare global {interface Window {Pose?:typeof Pose}}
@@ -44,5 +44,23 @@ export function preparePhotoAvatar(image:HTMLImageElement):Promise<PreparedAvata
 
  output={image:person,foreground:foreground.toDataURL('image/png'),width:c.width,height:c.height,anchors:anchors?cropAnchors(anchors,crop,w,h):null,originalAnchors:anchors,crop,originalWidth:w,originalHeight:h};
  });try{await pose.send({image});if(!output)throw Error('We couldn’t isolate one person. Choose a clear photo of just you, with your shoulders visible.');return output}finally{await pose.close()}};
+ const task=queue.then(work,work);queue=task.catch(()=>{});return task;
+}
+
+/** Original-photo local preview: pose and optional soft occlusion once per uploaded reference. */
+export function prepareInstantAvatar(image:HTMLImageElement):Promise<PreparedAvatar>{
+ const work=async()=>{await loadRuntime();if(!window.Pose)throw Error('Local alignment could not load. Use manual body points.');const pose=new window.Pose({locateFile:file=>'/pose/'+file});let output:PreparedAvatar|null=null;
+ pose.setOptions({modelComplexity:0,smoothLandmarks:false,enableSegmentation:true,smoothSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});
+ pose.onResults((results:Results)=>{const points=results.poseLandmarks,w=image.naturalWidth,h=image.naturalHeight;if(!points?.length)return;const valid=(i:number)=>(points[i]?.visibility??0)>.45&&points[i].x>0&&points[i].x<1&&points[i].y>0&&points[i].y<1,point=(i:number)=>({x:points[i].x,y:points[i].y}),pair=(a:number,b:number)=>{const x=point(a),y=point(b);return x.x<y.x?[x,y]:[y,x]};if(!valid(11)||!valid(12))return;const [left,right]=pair(11,12),center={x:(left.x+right.x)/2,y:(left.y+right.y)/2},span=Math.hypot((right.x-left.x)*w,(right.y-left.y)*h);if(span<w*.04)return;
+ const hips=valid(23)&&valid(24)?pair(23,24):null,hip=hips?{x:(hips[0].x+hips[1].x)/2,y:(hips[0].y+hips[1].y)/2}:{x:center.x,y:Math.min(1,center.y+span*1.55/h)},waist={x:center.x+(hip.x-center.x)*.64,y:center.y+(hip.y-center.y)*.64};if(waist.y<center.y+.04)return;
+ const knees=valid(25)&&valid(26)?pair(25,26):null,ankles=valid(27)&&valid(28)?pair(27,28):null;
+ const anchors:BodyAnchors={left,right,waist,...(hips?{hipLeft:hips[0],hipRight:hips[1]}:{}),...(knees?{kneeLeft:knees[0],kneeRight:knees[1]}:{}),...(ankles?{ankleLeft:ankles[0],ankleRight:ankles[1]}:{}),confidence:hips&&knees&&ankles?'full':'upper'};
+ const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d')!;const oval=(cx:number,cy:number,rx:number,ry:number)=>{ctx.save();ctx.translate(cx,cy);ctx.scale(rx,ry);const gradient=ctx.createRadialGradient(0,0,.7,0,0,1);gradient.addColorStop(0,'rgba(255,255,255,1)');gradient.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gradient;ctx.beginPath();ctx.arc(0,0,1,0,Math.PI*2);ctx.fill();ctx.restore()};
+ // Soft masks only: no hard rectangular face cutout or entire original sleeve layer.
+ if(valid(0))oval(points[0].x*w,points[0].y*h-span*.14,span*.32,span*.42);
+ for(const [wrist,finger] of [[15,19],[16,20]])if(valid(wrist)&&valid(finger))oval((points[wrist].x+points[finger].x)/2*w,(points[wrist].y+points[finger].y)/2*h,span*.085,span*.12);
+ if(results.segmentationMask){ctx.globalCompositeOperation='destination-in';ctx.drawImage(results.segmentationMask,0,0,w,h)}ctx.globalCompositeOperation='source-in';ctx.drawImage(image,0,0,w,h);ctx.globalCompositeOperation='source-over';
+ output={image:image.src,foreground:c.toDataURL('image/png'),width:w,height:h,anchors,originalAnchors:anchors,crop:{x:0,y:0,width:w,height:h},originalWidth:w,originalHeight:h};
+ });try{await pose.send({image});if(!output)throw Error('Body landmarks were unclear. Set shoulder and waist points manually; a full-body standing photo works best.');return output}finally{await pose.close()}};
  const task=queue.then(work,work);queue=task.catch(()=>{});return task;
 }

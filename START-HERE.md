@@ -12,6 +12,9 @@ Open the Local URL printed by the first terminal. If a port is already in use, u
 
 Keep your existing private .env beside package.json for AI generation. It stays on your computer and is not backed up to GitHub. Never put API keys in VITE_ variables. Optional Meshy configuration is described in README.md.
 
-New: upload one session photo in My avatar or Fashion World, choose a hanger or use the arrows to change the body-shaped styling preview automatically. This instant interaction makes no AI requests. Realistic AI refinement remains optional in the photo studio. In Furniture → Lighting, switch room concepts without changing the product.
+Photo fitting: upload a clear reference once, then enable the AI fitting room. New selected outfits are edited by the configured image service; charges may apply and processing takes time. Completed looks switch from cache. The first result needs a real provider response; the app never substitutes a garment overlay. Private photos and generated looks are session data, not project files.
 
 The local preview is not a public share link. A GitHub save backs up source; deploying the site is a separate step.
+
+
+Current preview: http://localhost:5175/fashion . Choose Instant Preview for local garment switching; choose Generate Realistic Look only for optional provider-backed photo editing. Instant preview is approximate and includes a measured switch-time readout.

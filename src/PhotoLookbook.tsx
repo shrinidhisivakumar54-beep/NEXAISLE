@@ -2,19 +2,14 @@ import OutfitModel from './OutfitModel';
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {X,Upload,Sparkles,ArrowLeft} from 'lucide-react';
 import type {Product} from './store';
-import {atlasUrl,findPiece,railPieces,pieceProduct} from './fashion/collection';
+import {findPiece,railPieces,pieceProduct} from './fashion/collection';
 import GarmentPhoto from './fashion/GarmentPhoto';
 import './lookbook.css';
-import {usePersonalAvatar,readAvatarPhoto,fitKey,cachedFit,cacheFit} from './personalAvatar';
+import {fitting,decodeFittingImage} from './fashion/fittingClient';
+import {usePersonalAvatar,readAvatarPhoto,fitKey,cachedFit} from './personalAvatar';
 
 const poses=[{id:'front',name:'Front view',note:'A relaxed, full-length portrait'},{id:'turn',name:'Three-quarter',note:'A natural turn toward the camera'},{id:'walk',name:'In motion',note:'A still photograph in a walking pose'}];
 type Result={pose:string;image?:string;error?:string;product:string};
-async function garmentImage(id:string){
-  const piece=findPiece(id);if(!piece)throw new Error('Product photography is not available for this piece.');
-  const image=new Image();image.src=atlasUrl;await image.decode();
-  const [l,t,r,b]=piece.crop,canvas=document.createElement('canvas');canvas.width=r-l;canvas.height=b-t;
-  canvas.getContext('2d')!.drawImage(image,l,t,r-l,b-t,0,0,r-l,b-t);return canvas.toDataURL('image/png');
-}
 export default function PhotoLookbook({product,onClose,onLocal}:{product:Product;onClose:()=>void;onLocal:(product:Product)=>void}){
   const avatar=usePersonalAvatar();
   const [model,setModel]=useState('');
@@ -36,10 +31,10 @@ export default function PhotoLookbook({product,onClose,onLocal}:{product:Product
   async function upload(file?:File){if(!file)return;const id=++uploadId.current;setError('');try{const next=await readAvatarPhoto(file);if(alive.current&&id===uploadId.current){avatar.set(next.photo,next.width,next.height);setPhoto(next.photo);setResults([]);setConsent(false)}}catch(e){if(alive.current&&id===uploadId.current)setError((e as Error).message)}}
   async function generate(){
     if(modelsRunningRef.current||running.current||!photo||!consent||!available||!chosen.length)return;
-    running.current=true;setBusy(true);setError('');setResults([]);const abort=new AbortController();controller.current=abort;
-    try {const revision=avatar.revision;const garment=await garmentImage(selected.id);
-      for(const pose of chosen){if(abort.signal.aborted)break;const key=fitKey(revision,selected.id,pose,provider,model),existing=cachedFit(key);if(existing){setResults(old=>[...old,{pose,image:existing,product:selected.name}]);continue}setProgress(`Creating ${poses.find(p=>p.id===pose)!.name.toLowerCase()}… This can take a few minutes.`);
-        try{const response=await fetch('/api/try-on',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({person:photo,garment,pose,consent:true}),signal:abort.signal});const body=await response.text();if(!body.trim())throw new Error(`The local server returned an empty response (HTTP ${response.status}). Check the npm run server terminal and ZaoAPI request history before retrying.`);let data;try{data=JSON.parse(body)}catch{throw new Error(`The local server returned an unreadable response (HTTP ${response.status}). Check both terminal windows for errors.`)}if(!response.ok)throw new Error(data?.error||`Generation failed (HTTP ${response.status}).`);if(typeof data?.image!=='string'||!(data.image.startsWith('data:image/png;base64,')||data.image.startsWith('https://')))throw new Error('No image returned.');if(!abort.signal.aborted&&usePersonalAvatar.getState().revision===revision){cacheFit(key,data.image);setResults(old=>[...old,{pose,image:data.image,product:selected.name}]);}}
+    running.current=true;setBusy(true);setError('');const abort=new AbortController();controller.current=abort;
+    try {const revision=avatar.revision;
+      for(const pose of chosen){if(abort.signal.aborted)break;const key=fitKey(revision,selected.id,pose,provider,model),existing=cachedFit(key);if(existing){setResults(old=>[...old.filter(result=>result.pose!==pose),{pose,image:existing,product:selected.name}]);continue}setProgress(`Creating ${poses.find(p=>p.id===pose)!.name.toLowerCase()}… This can take a few minutes.`);
+        try{if(fitting.failure(key))fitting.retry(key);const data=await fitting.request({key,photo,revision,garmentId:selected.id,garmentName:selected.name,pose,provider,model},abort.signal);await decodeFittingImage(data.image);if(!abort.signal.aborted&&usePersonalAvatar.getState().revision===revision)setResults(old=>[...old.filter(result=>result.pose!==pose),{pose,image:data.image,product:selected.name}]);}
         catch(e){if(abort.signal.aborted)break;setResults(old=>[...old,{pose,error:(e as Error).message,product:selected.name}]);}
       }
     }catch(e){if(!abort.signal.aborted)setError((e as Error).message)}finally{running.current=false;if(alive.current){setBusy(false);setProgress(abort.signal.aborted?'Generation stopped. Completed images are still available.':'')}}
