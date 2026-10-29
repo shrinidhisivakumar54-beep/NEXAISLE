@@ -12,6 +12,6 @@ Open the Local URL printed by the first terminal. If a port is already in use, u
 
 Keep your existing private .env beside package.json for AI generation. It stays on your computer and is not backed up to GitHub. Never put API keys in VITE_ variables. Optional Meshy configuration is described in README.md.
 
-New: upload one session photo in My avatar or Fashion World, choose Prepare fitted wardrobe and consent to prepare the pieces you want. Once prepared, arrows switch realistic styling images instantly. Preparation uses your image provider; charges may apply. In Furniture → Lighting, switch room concepts without changing the product.
+New: upload one session photo in My avatar or Fashion World, choose a hanger or use the arrows to change the body-shaped styling preview automatically. This instant interaction makes no AI requests. Realistic AI refinement remains optional in the photo studio. In Furniture → Lighting, switch room concepts without changing the product.
 
 The local preview is not a public share link. A GitHub save backs up source; deploying the site is a separate step.
