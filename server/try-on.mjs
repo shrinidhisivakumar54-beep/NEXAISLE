@@ -49,14 +49,22 @@ export function createHandler({key=process.env.OPENAI_API_KEY, fetcher=fetch, ba
       form.set('model',model);form.set('size','1024x1536');form.set('quality','high');form.set('input_fidelity','high');form.set('n','1');
       form.append('image[]',person,'person.png');form.append('image[]',garment,'garment.png');
       form.set('prompt',`Create a photorealistic full-body fashion try-on photograph. Image 1 is the person: preserve their identity, face, skin tone, body proportions, age and hair. Image 2 is the garment reference: dress the person in this exact garment, preserving its colour, graphic, neckline, sleeves, texture and silhouette. Replace only the corresponding clothing; retain complementary clothing and shoes. No hangers. Fit naturally to the body with realistic folds, lighting, shadows and correct arm/hair occlusion. Pose: ${poses[input.pose]}. Keep the whole person including head and feet in frame in a softly lit ivory studio. One person, one image, no collage, no text. Do not change their body shape or beautify their face. This is an illustrative styling image.`);
+      if(input.carousel===true)form.set('prompt',`Create ONE photorealistic fashion showroom photograph. Image 1 is the sole main person reference. Ignore all bystanders and remove the entire original background. Preserve the main person's identity, age, face, hair, skin tone and body proportions as faithfully as possible. Image 2 is the exact selected garment. Replace the corresponding existing clothing completely with this garment, preserving its colour, material, graphic, neckline, sleeves and silhouette. It must be naturally WORN, not pasted on: correct shoulder seams, neckline around the base of the neck, realistic arm/hair occlusion, folds, perspective and body contour. No hanger. One person only, standing upright, looking toward the camera, arms relaxed slightly away from the torso, complete head-to-toe body centred and fully visible, neutral complementary trousers/skirt and shoes if not supplied. If Image 1 is already a full-body studio photo, preserve its exact pose, face, camera and framing. If the body is cropped, infer a plausible clothed full body without claiming measured proportions. Use the exact same straight-on camera, softly lit charcoal studio background RGB 16,17,23, and neutral studio lighting for every garment. Person occupies 86 percent of image height. No scenery, other people, text, hangers, collage or accessories not in the reference. This is an illustrative AI styling image, not a physical fitting.`);
       lastStarted=Date.now();
       const response=await fetcher(base+'/images/edits',{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${key}`},body:form,signal:controller.signal});
       if(!response.ok) return send(502,{error:response.status===429?'The image service is busy or its quota is exhausted. Try later.':`${provider} image editing returned HTTP ${response.status}. Check that this key and model support /v1/images/edits with two images.`});
       let result;
-      try { result=await response.json(); }
-      catch {return send(502,{error:`${provider} returned an empty or invalid image response (HTTP ${response.status}). Check provider request history before retrying.`});}
-      if(!result?.data?.[0]?.b64_json) return send(502,{error:`${provider} returned no base64 image. Its response format may differ from the supported image-editing API. Check provider request history before retrying.`});
-      send(200,{image:`data:image/png;base64,${result.data[0].b64_json}`});
+      try {result=await response.json()} catch {return send(502,{error:`${provider} returned a response that was not readable JSON. Check the provider request history before retrying; generation may already have been billed.`})}
+      const item=result.data?.[0];
+      if(item?.b64_json) return send(200,{image:`data:image/png;base64,${item.b64_json}`});
+      if(typeof item?.url==='string') {
+        try {const u=new URL(item.url);const h=u.hostname.toLowerCase();
+          if(u.protocol==='https:'&&!u.username&&!u.password&&/^[a-z0-9.-]+$/.test(h)&&h.includes('.')&&!/^\d+\./.test(h)&&!h.endsWith('.localhost')&&!h.endsWith('.local')&&!h.endsWith('.internal'))return send(200,{image:u.href});
+        } catch {}
+        return send(502,{error:`${provider} returned an image address that could not be displayed safely. Check the completed image in your provider account before trying again.`});
+      }
+      console.error('[try-on] Image missing from provider response; fields:',Object.keys(result||{}).filter(k=>/^[a-zA-Z_]+$/.test(k)).slice(0,12).join(','));
+      return send(502,{error:`${provider} did not return an image in the expected format. Check its request history for a completed image or pending task before retrying; another attempt may incur another charge.`});
     } catch(error) {
       const code=error?.cause?.code||error?.code;
       const certificate=['UNABLE_TO_GET_ISSUER_CERT_LOCALLY','UNABLE_TO_VERIFY_LEAF_SIGNATURE','CERT_HAS_EXPIRED','SELF_SIGNED_CERT_IN_CHAIN'].includes(code);

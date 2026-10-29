@@ -1,0 +1,90 @@
+/* Jet black / cerulean / neon rose */
+:root{color-scheme:dark;--jet:#101117;--surface:#192231;--line:#344459;--cerulean:#009cdb;--rose:#ff3d9a;--ink:#eef4ff;--muted:#a9b8ce;background:var(--jet);color:var(--ink)}
+.atelier-app{--lime:var(--rose);--blue:var(--cerulean);background:var(--jet);color:var(--ink)}
+.atelier-app button:focus-visible,.atelier-app input:focus-visible,.atelier-app a:focus-visible{outline:2px solid var(--rose);outline-offset:4px}
+.atelier-app button:hover{color:var(--rose)}
+.atelier-app header .brand,.atelier-app header .brandmark{color:var(--ink);border-color:var(--cerulean)}
+.atelier-app header nav button.active,.atelier-app .hero-copy h1,.atelier-app .worlds h2,.atelier-app .product-details h2,.atelier-app .studio-tools h3,.atelier-app .catalogue-header h3{color:var(--ink)}
+.atelier-app header nav button.active:before,.atelier-app .pulse{background:var(--rose);box-shadow:0 0 14px #ff3d9a44}
+.atelier-app .primary{background:var(--cerulean);color:#071019;border:1px solid #33b9ef;font-size:11px;letter-spacing:.7px}
+.atelier-app .primary:hover{background:#38bdf0;color:#071019;box-shadow:0 6px 25px #009cdb33}
+.atelier-app .secondary{background:#17202c;color:var(--ink);border-color:#40536b}
+.atelier-app .secondary:hover{background:#243349;border-color:var(--cerulean);color:#fff}
+.atelier-app .side-link.selected{background:#009cdb18;border-color:#009cdb88;color:#59ceff;box-shadow:inset 3px 0 var(--cerulean)}
+.atelier-app header .bag span{background:#ff3d9a20;color:#ff78b9}
+.atelier-app .hero-copy h1 em,.atelier-app .asterisk{color:var(--rose)}
+.atelier-app .hero-copy h1 .outline{-webkit-text-stroke-color:var(--cerulean)}
+.atelier-app .hero-visual{background:radial-gradient(ellipse at center,#009cdb16,transparent 70%)}
+.atelier-app .ticker,.atelier-app .fashion-editorial-strip{background:var(--cerulean);color:#06141e}
+.atelier-app .grocery-card{background:radial-gradient(ellipse at right bottom,#009cdb30,#151b27 75%)}
+.atelier-app .fashion-card{background:radial-gradient(ellipse at right bottom,#ff3d9a28,#151b27 75%)}
+.atelier-app .world-card>svg,.atelier-app .empty>svg{color:var(--rose)}
+.atelier-app .hero-copy p,.atelier-app .studio-tools p,.atelier-app .product-details p{color:#b3c0d3}
+.atelier-app .eyebrow{color:#8db9d0;font-size:10px}
+.atelier-app .side-link{font-size:12px;color:#b3c0d3}
+.atelier-app .product h4{font-size:13px;color:var(--ink)}
+.atelier-app .product div>span,.atelier-app .cart-item span{color:#9ddfff}
+.atelier-app .product:hover{border-color:var(--cerulean);background:#1d2c3d}
+.atelier-app .sizes button.chosen,.atelier-app .swatches button.chosen{border-color:var(--rose);outline-color:var(--rose);color:#ff8dc4}
+.atelier-app .sizes button.chosen{background:#ff3d9a18}
+.atelier-app .scene-top .demo-tag,.atelier-app .scene-actions .secondary{background:#101722ed;color:var(--ink);border-color:#40536b}
+.atelier-app .scene-bottom{background:#101722f2;color:#b4c8dd;border-color:#344459}
+.atelier-app .employee-label{background:#142539ed;color:#eef4ff;border-color:#009cdb88}
+.atelier-app .employee-label:before{background:var(--rose)}
+.atelier-app .touch-controls button{background:#142539ed;color:#e3f5ff;border-color:#426383}
+.atelier-app .touch-controls button:active{background:var(--cerulean);color:#071019}
+.atelier-app .aisle-directory button[aria-pressed=true]{background:#009cdb22;border-color:var(--cerulean)}
+.atelier-app .fashion-showroom{--atelier-ink:#eef4ff;--atelier-soft:#a9b8ce;--atelier-line:#344459;background:var(--jet);color:var(--ink)}
+.atelier-app .atelier-intro h1 em{color:var(--rose)}
+.atelier-app .atelier-collection-nav button[aria-pressed=true]{color:#59ceff}
+.atelier-app .atelier-collection-nav button[aria-pressed=true]:after{background:var(--cerulean)}
+.atelier-app .rail-product-caption{background:#192231f5;border-color:var(--rose);color:var(--ink)}
+.atelier-app .fashion-edit-card>div{background:radial-gradient(ellipse,#26354b,#171c28)}
+.atelier-app .fashion-product-modal .tryon-button{background:#ff3d9a12;border-color:#ff3d9a80;color:#ff8dc4}
+.atelier-app .fashion-product-modal .tryon-button:hover{background:#ff3d9a25}
+.atelier-app .toast{background:#152a39;border-color:var(--cerulean);color:var(--ink)}
+.atelier-app .toast button{color:#ff8dc4}
+.avatar-choice{border:0;padding:0;margin:26px 0}
+.avatar-choice legend{font-size:13px;color:#d6e8fc;margin-bottom:12px}
+.avatar-choice>div{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.avatar-choice button{display:flex;flex-wrap:wrap;align-items:center;gap:9px;text-align:left;padding:16px 12px;border:1px solid #344459;background:#17202c;border-radius:8px}
+.avatar-choice button small{width:100%;font-size:10px;color:#a9b8ce;line-height:1.5}
+.avatar-choice button[aria-pressed=true]{border-color:#ff3d9a;background:#ff3d9a12;color:#ff8dc4;box-shadow:inset 0 0 0 1px #ff3d9a40}
+.camera-panel{position:absolute;left:18px;bottom:60px;max-width:calc(100% - 155px);z-index:16;background:#101722ed;backdrop-filter:blur(14px);border:1px solid #40536b;border-radius:10px;padding:10px;box-shadow:0 8px 30px #0004}
+.camera-panel-label{display:flex;align-items:center;gap:20px;padding:2px 4px 9px;font-size:10px;letter-spacing:1px;color:#9ddfff}
+.camera-panel-label small{font-size:10px;letter-spacing:0;color:#a9b8ce}
+.atelier-app .camera-panel .view-switch{position:static;display:flex;flex-wrap:wrap;background:none;border:0;padding:0;gap:4px}
+.atelier-app .camera-panel .view-switch button{font-size:11px;letter-spacing:0;padding:9px 11px;border-radius:5px;color:#c1d0e4;min-height:36px}
+.atelier-app .camera-panel .view-switch button[aria-pressed=true]{background:#009cdb;color:#071019;font-weight:700}
+.atelier-app .camera-panel .view-switch button:hover{background:#263c55;color:#fff}
+.atelier-app .lookbook,.atelier-app .mirror-dialog{background:#101117;color:#eef4ff}
+.atelier-app .lookbook input{accent-color:var(--rose)}
+.atelier-app .lookbook-garments button[aria-pressed=true]{border-color:var(--rose);background:#ff3d9a12}
+.atelier-app .mirror-stage{background:radial-gradient(ellipse,#26354b,#101722)}
+.atelier-app .mirror-empty{color:#eef4ff}
+.atelier-app .mirror-header>button{color:#eef4ff}
+.atelier-app .inspection-canvas>span,.atelier-app .fashion-photo-viewer>span{color:#b6c6db}
+@media(max-width:760px){.camera-panel{left:10px;bottom:65px;max-width:calc(100% - 125px);padding:7px}.camera-panel-label{display:block;font-size:9px}.camera-panel-label small{display:block;margin-top:5px;font-size:9px}.atelier-app .camera-panel .view-switch button{font-size:10px;padding:7px 9px}.atelier-app .scene-bottom{font-size:8px}.avatar-choice button{padding:13px 10px}}
+@media(prefers-reduced-motion:reduce){.atelier-app .primary:hover{transform:none}}
+
+/* Grocery clarity, activity and movement feedback. */
+.grocery-activity{display:flex;align-items:center;gap:24px;flex-wrap:wrap;border:1px solid #344459;border-radius:12px;background:linear-gradient(110deg,#132333,#191522);padding:22px;margin-bottom:22px}
+.activity-tag{font-size:10px;letter-spacing:1.3px;color:#ff8dc4}.grocery-activity h3{font-size:19px;margin:8px 0;color:#eef4ff}.grocery-activity p{font-size:12px;color:#a9b8ce}
+.activity-stat{padding-left:22px;border-left:1px solid #344459;display:grid;gap:6px}.activity-stat strong{font-size:30px;color:#7dd9ff}.activity-stat span{font-size:11px;color:#b8c8dc}
+.activity-recent{display:flex;align-items:center;gap:12px;flex:1;min-width:220px}.activity-recent b{display:block;font-size:12px;line-height:1.5;color:#eef4ff}.activity-recent small{display:block;margin-top:6px;font-size:10px;color:#a9b8ce}
+.atelier-app .products{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.atelier-app .product{display:flex;align-items:stretch;flex-direction:column;padding:0;overflow:hidden;border-radius:10px;gap:0}
+.atelier-app .product-art{width:100%;height:145px;background:radial-gradient(ellipse,#2c3d51,#1b2332)}
+.atelier-app .product-art>.grocery-illustration{font-size:66px;background:none;width:auto;height:auto;box-shadow:none;border-radius:0;line-height:1.2;filter:drop-shadow(0 7px 8px #0005)}
+.atelier-app .product-art>.grocery-illustration:after{display:none}
+.atelier-app .product>div:last-child{padding:18px;width:100%}.atelier-app .product h4{font-size:16px;margin:9px 0}.atelier-app .product .grocery-price{font-size:20px;color:#9ddfff;font-weight:700}
+.atelier-app .product .product-category{display:block;font-size:11px;color:#a9b8ce;margin-top:10px;letter-spacing:0}
+.atelier-app .product .demo-popularity{display:block;font-size:11px;margin-top:12px;color:#ff8dc4}
+.atelier-app .product .product-inspect{display:block;border-top:1px solid #344459;padding-top:12px;margin-top:14px;color:#d8edff;font-size:12px}
+.product-demo-demand{padding:12px 14px;border:1px solid #ff3d9a55;background:#ff3d9a0d;margin:0 0 20px;border-radius:6px}.product-demo-demand b{font-size:13px;color:#ff8dc4}.product-demo-demand span{display:block;font-size:11px;color:#a9b8ce;margin-top:5px}
+.movement-help{position:absolute;top:84px;left:18px;z-index:16;pointer-events:none;background:#101722cf;color:#d3eaff;padding:9px 12px;font-size:11px;border-radius:5px;max-width:65%}.movement-help b{display:block;font-size:11px;font-weight:500;color:#ff8dc4;margin-top:6px}
+.atelier-app .camera-panel-label small{font-size:10px}.atelier-app .camera-panel{max-width:calc(100% - 155px)}
+@media(max-width:760px){.grocery-activity{padding:16px;gap:18px}.grocery-activity>div:first-child{width:100%}.activity-stat{padding-left:0;padding-right:20px;border-left:0}.activity-recent{width:100%}.atelier-app .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.atelier-app .product>div:last-child{padding:12px}.atelier-app .product h4{font-size:14px}.atelier-app .product-art{height:120px}.atelier-app .product .grocery-price{font-size:18px}.movement-help{top:95px;left:10px;font-size:10px;max-width:66%}.atelier-app .camera-panel{max-width:calc(100% - 120px)}}
+
+.atelier-app .worlds{grid-template-columns:repeat(3,minmax(0,1fr))}.atelier-app .worlds>div:first-child{grid-column:1/-1}.atelier-app .worlds h2{max-width:none}.atelier-app .furniture-card{background:radial-gradient(ellipse at right bottom,#ffbb682a,#151b27 75%)}
+@media(max-width:760px){.atelier-app .worlds{grid-template-columns:1fr}.atelier-app .worlds>div:first-child{grid-column:auto}}
