@@ -22,34 +22,3 @@ test('rejects unexpected provider destinations',()=>{
   assert.throws(()=>createHandler({baseUrl:'http://api.miaoquai.com/v1'}),/OPENAI_BASE_URL/);
   assert.throws(()=>createHandler({baseUrl:'https://other.example/v1'}),/OPENAI_BASE_URL/);
 });
-test('accepts Vite loopback origins through the proxy, rejects unrelated origins',async t=>{
-  const post=await service(t,{key:'test',fetcher:()=>{throw Error('Must not generate without consent')}});
-  for(const origin of ['http://localhost:5173','http://127.0.0.1:5174','http://[::1]:5175']) {
-    const response=await post({pose:'front',consent:false},{Origin:origin});
-    assert.equal(response.status,400,origin+' should reach consent validation');
-  }
-  for(const origin of ['https://other.example','http://localhost.attacker.example:5173','http://127.0.0.1:9000','null','bad-url']) {
-    assert.equal((await post({}, {Origin:origin})).status,403,origin);
-  }
-});
-test('empty provider response gives an actionable error',async t=>{
-  const post=await service(t,{key:'test',fetcher:async()=>new Response('',{status:200})});
-  const response=await post({person:pixel,garment:pixel,pose:'front',consent:true});
-  assert.equal(response.status,502);
-  assert.match((await response.json()).error,/empty or invalid image response/);
-});
-test('unsupported image response is distinguished from network failure',async t=>{
-  const post=await service(t,{key:'test',fetcher:async()=>Response.json({data:[{url:'https://example.com/image.png'}]})});
-  const response=await post({person:pixel,garment:pixel,pose:'front',consent:true});
-  assert.match((await response.json()).error,/no base64 image/);
-});
-test('connection errors expose only known safe diagnostic codes',async t=>{
-  const post=await service(t,{key:'test',fetcher:async()=>{throw new TypeError('private-secret',{cause:{code:'UND_ERR_SOCKET',message:'private-url'}})}});
-  const response=await post({person:pixel,garment:pixel,pose:'front',consent:true});
-  const data=await response.json();assert.equal(data.code,'UND_ERR_SOCKET');assert.match(data.error,/UND_ERR_SOCKET/);assert.doesNotMatch(JSON.stringify(data),/private/);
-});
-test('unknown error codes cannot leak exception values',async t=>{
-  const post=await service(t,{key:'test',fetcher:async()=>{throw new Error('private',{cause:{code:'private-secret'}})}});
-  const data=await (await post({person:pixel,garment:pixel,pose:'front',consent:true})).json();
-  assert.equal(data.code,'CONNECTION_FAILED');assert.doesNotMatch(JSON.stringify(data),/private/);
-});

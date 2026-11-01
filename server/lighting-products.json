@@ -1,0 +1,58 @@
+[
+  {
+    "id": "crystal",
+    "name": "KRISTALLER",
+    "subtitle": "Crystal chandelier \u00b7 three arms",
+    "material": "Glass prisms \u00b7 silver-coloured steel",
+    "category": "Chandeliers",
+    "image": "/lighting/crystal.jpg"
+  },
+  {
+    "id": "chandelier",
+    "name": "SIMRISHAMN",
+    "subtitle": "Opal glass chandelier \u00b7 seven arms",
+    "material": "Opal glass \u00b7 chrome-plated steel",
+    "category": "Chandeliers",
+    "image": "/lighting/chandelier.jpg"
+  },
+  {
+    "id": "pendant",
+    "name": "SINNERLIG",
+    "subtitle": "Handwoven bamboo pendant",
+    "material": "Handwoven bamboo \u00b7 natural finish",
+    "category": "Pendants",
+    "image": "/lighting/pendant.jpg"
+  },
+  {
+    "id": "table",
+    "name": "T\u00c4LLBYN",
+    "subtitle": "Opal glass table lamp",
+    "material": "Opal glass \u00b7 nickel-plated steel",
+    "category": "Table lamps",
+    "image": "/lighting/table.jpg"
+  },
+  {
+    "id": "desk",
+    "name": "RANARP",
+    "subtitle": "Adjustable work lamp \u00b7 off-white",
+    "material": "Painted steel \u00b7 adjustable head and arm",
+    "category": "Table lamps",
+    "image": "/lighting/desk.jpg"
+  },
+  {
+    "id": "warmbulb",
+    "name": "SOLHETTA \u00b7 Warm",
+    "subtitle": "E27 LED bulbs \u00b7 2700 K",
+    "material": "E27 \u00b7 806 lumens \u00b7 2700 K",
+    "category": "Bulbs",
+    "image": "/lighting/warmbulb.jpg"
+  },
+  {
+    "id": "whitebulb",
+    "name": "SOLHETTA \u00b7 White",
+    "subtitle": "E27 LED bulbs \u00b7 4000 K",
+    "material": "E27 \u00b7 806 lumens \u00b7 4000 K",
+    "category": "Bulbs",
+    "image": "/lighting/whitebulb.jpg"
+  }
+]
