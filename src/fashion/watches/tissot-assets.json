@@ -1,0 +1,241 @@
+[
+  {
+    "sku": "T1374071104100",
+    "officialUrl": "https://www.tissotwatches.com/en-us/T1374071104100.html",
+    "images": [
+      {
+        "key": "front",
+        "label": "Front",
+        "src": "/watches/tissot/T1374071104100-front.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw95c4331d/product-pictures/63f42767-a9f5-4cdd-b952-8ea7b82b7e0c_T137-407-11-041-00_shadow.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1374071104100-front.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "f3d657bc27f40fd65d71c6369459d424e4ecc4dfa5f8cbc305f8934cfb9bfe0d"
+      },
+      {
+        "key": "back",
+        "label": "Case back",
+        "src": "/watches/tissot/T1374071104100-back.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dwe70b269e/product-pictures/cb22b17c-ceea-4284-bffc-9e4eaa61acb3_T137_407_11_041_00_B1.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1374071104100-back.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "b66bc568d56069dcdf23ade61636278e098ebdfa2764092697fd72c61517dc6e"
+      },
+      {
+        "key": "wrist",
+        "label": "On wrist",
+        "src": "/watches/tissot/T1374071104100-wrist.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dwdb099ca4/product-pictures/181e9598-ab66-498a-a38a-f25cb9725dc6_T137_407_11_041_00_WRIST.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1374071104100-wrist.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGB",
+        "sha256": "a40ec8fc90670c16733e5bf415f38f970d970f3dd0cce8e05669be3ae1b700ee"
+      }
+    ],
+    "price": "850.00",
+    "currency": "USD",
+    "modelUrl": null,
+    "componentModelUrl": null,
+    "verifiedAt": "2026-11-02"
+  },
+  {
+    "sku": "T1208072205100",
+    "officialUrl": "https://www.tissotwatches.com/en-us/T1208072205100.html",
+    "images": [
+      {
+        "key": "front",
+        "label": "Front",
+        "src": "/watches/tissot/T1208072205100-front.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw93f94ed8/product-pictures/0226d643-ce3e-4d47-83ba-444304b4f526_T120-807-22-051-00_Shadow.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1208072205100-front.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "1402c5627ac68cd36ce5de00299905558b9c6ac4abbad3654ef881c6d45d3dc1"
+      },
+      {
+        "key": "profile",
+        "label": "Profile",
+        "src": "/watches/tissot/T1208072205100-profile.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw688d980b/product-pictures/ceca79f9-f67d-4e8c-80bb-37e007fa26a8_T120_807_22_051_00_PROFIL.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1208072205100-profile.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "aac67b6b559a5959b1938c42aafef58466a042a8e22c2eed70de014aff2a8117"
+      },
+      {
+        "key": "back",
+        "label": "Case back",
+        "src": "/watches/tissot/T1208072205100-back.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw96695279/product-pictures/8e0210a0-703f-4adb-84de-4fdeff123da3_T120-807-22-051-00_B1.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1208072205100-back.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "9bc897a2ef7f62fcafd214e3654043918f3aa15254107c12de9962d13c666600"
+      },
+      {
+        "key": "wrist",
+        "label": "On wrist",
+        "src": "/watches/tissot/T1208072205100-wrist.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw51aca244/product-pictures/3ae34ba4-5e5c-4819-995c-f4237a19349b_T120_807_22_051_00_WRIST.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1208072205100-wrist.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "2ee03ce8532a306885dda1a69df1530e5f01d580eb481f0bf89fcfd8d90ad512"
+      }
+    ],
+    "price": "895.00",
+    "currency": "USD",
+    "modelUrl": null,
+    "componentModelUrl": null,
+    "verifiedAt": "2026-11-02"
+  },
+  {
+    "sku": "T0064071104300",
+    "officialUrl": "https://www.tissotwatches.com/en-us/T0064071104300.html",
+    "images": [
+      {
+        "key": "front",
+        "label": "Front",
+        "src": "/watches/tissot/T0064071104300-front.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw343cc06a/product-pictures/7614a6b7-201d-4af1-ac0d-cc35d5cbfc50_T006-407-11-043-00_shadow.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T0064071104300-front.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "3d45610ebf1ff63545bc2299bc00eecbd6a3b25110779f4e7a81f942ef8a26d5"
+      },
+      {
+        "key": "profile",
+        "label": "Profile",
+        "src": "/watches/tissot/T0064071104300-profile.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw590b2eb7/product-pictures/08a31758-f7c3-42c9-839c-a2d4fff88419_T006_407_11_043_00_PROFIL.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T0064071104300-profile.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "e6bcdb99e0393a1b69e2d1272076dcd7feace96571e6be146c1ae16979d7f77e"
+      },
+      {
+        "key": "back",
+        "label": "Case back",
+        "src": "/watches/tissot/T0064071104300-back.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw921cc7a1/product-pictures/33ff59ec-679c-443c-a264-c5478185bffa_T006_407_11_043_00_B1.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T0064071104300-back.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "1294a327c1598ac3769bfea6e32b6d37aa3c756fd53e381a55632a44ded0e0b4"
+      },
+      {
+        "key": "wrist",
+        "label": "On wrist",
+        "src": "/watches/tissot/T0064071104300-wrist.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw5f2db5c9/product-pictures/cc23179d-0bcf-43fc-ba60-87e041744697_T006_407_11_043_00_WRIST.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T0064071104300-wrist.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "acae54d64486aaff89820a3033056838413e29b4e1d259ccf0a4ef237e621f92"
+      }
+    ],
+    "price": "795.00",
+    "currency": "USD",
+    "modelUrl": null,
+    "componentModelUrl": null,
+    "verifiedAt": "2026-11-02"
+  },
+  {
+    "sku": "T1374171104100",
+    "officialUrl": "https://www.tissotwatches.com/en-us/T1374171104100.html",
+    "images": [
+      {
+        "key": "front",
+        "label": "Front",
+        "src": "/watches/tissot/T1374171104100-front.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw26efbd62/product-pictures/9b1ad177-f195-46bb-8cfe-e2b07afd5a3a_T137-417-11-041-00_Shadow.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1374171104100-front.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "9942f59f6728eee36fa3cbc9ad837dcedad963c527d215d56b7396b8bc6704df"
+      },
+      {
+        "key": "profile",
+        "label": "Profile",
+        "src": "/watches/tissot/T1374171104100-profile.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw28d9b472/product-pictures/21bcade1-2343-48dd-a6e6-5f6675a4e051_T137-417-11-041-00_PROFIL.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1374171104100-profile.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "c5cd996fe59467e1eade04bc3368f38ea466f02672e87e7647b6091cb1d077a8"
+      },
+      {
+        "key": "back",
+        "label": "Case back",
+        "src": "/watches/tissot/T1374171104100-back.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw9219ed0a/product-pictures/3d2c0252-7f5b-4691-a1da-67726d5cecf2_T137-417-11-041-00_B1.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1374171104100-back.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "8e75736f55009e2038a462014cd5e57d546c44f561916c8e6d80a2a3e1290ced"
+      },
+      {
+        "key": "wrist",
+        "label": "On wrist",
+        "src": "/watches/tissot/T1374171104100-wrist.png",
+        "sourceUrl": "https://www.tissotwatches.com/dw/image/v2/BKKD_PRD/on/demandware.static/-/Sites-Tissot-Catalogue/default/dw4fc04981/product-pictures/6da98356-47a8-4ea0-982d-4198ef1187d7_T137-417-11-041-00_WRIST.png?sm=fit&sw=1680&sh=1680,gravity=center",
+        "file": "T1374171104100-wrist.png",
+        "dimensions": [
+          1680,
+          1680
+        ],
+        "mode": "RGBA",
+        "sha256": "6f89b87a268ec0a6a9f1a714d9aa8f884ffd4857855d46a11b79ef930b9aeb7b"
+      }
+    ],
+    "price": "525.00",
+    "currency": "USD",
+    "modelUrl": null,
+    "componentModelUrl": null,
+    "verifiedAt": "2026-11-02"
+  }
+]

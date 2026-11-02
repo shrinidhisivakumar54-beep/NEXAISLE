@@ -1,0 +1,19 @@
+import {Suspense,useEffect,useMemo,useRef,useState} from 'react';
+import {Canvas,useFrame,useThree} from '@react-three/fiber';
+import {Environment,Lightformer,OrbitControls} from '@react-three/drei';
+import type {OrbitControls as Controls} from 'three-stdlib';
+import * as THREE from 'three';
+import WatchModel from './WatchModel';
+import {watchParts,partPosition,type WatchDesign,type PartId} from './watchCollection';
+export function illustrationDesign(quartz:boolean):WatchDesign{return {id:quartz?'educational-quartz':'educational-automatic',name:'Illustrative construction',ref:'UNBRANDED DEMONSTRATOR',price:0,color:'#33485b',metal:'#b5c5d2',dial:'#263e54',accent:'#70d0e8',strap:'steel',movement:quartz?'quartz':'automatic',date:false,chronograph:quartz,tagline:'Not a Tissot model or calibre'}}
+function Stage({design,exploded,part,focus,reset,onPart}:{design:WatchDesign;exploded:boolean;part:PartId|null;focus:PartId|null;reset:number;onPart:(id:PartId)=>void}){
+ const {camera,size,gl}=useThree(),controls=useRef<Controls>(null),moving=useRef(true),goal=useRef(new THREE.Vector3()),target=useRef(new THREE.Vector3()),group=useRef<THREE.Group>(null);
+ useEffect(()=>{
+  target.current.set(0,0,0);
+  if(focus&&exploded){const p=watchParts(design).find(p=>p.id===focus);if(p)target.current.set(...partPosition(p,1)).applyAxisAngle(new THREE.Vector3(0,1,0),-.35)}
+  const fit=Math.max(1,.95/(size.width/size.height));const distance=(focus?3.4:exploded?8.1:5.2)*fit;goal.current.copy(target.current).add(new THREE.Vector3(exploded?distance*.72:distance*.25,distance*.2,distance));moving.current=true;
+ },[exploded,focus,reset,design,size.width,size.height]);
+ useFrame((_,dt)=>{if(controls.current&&moving.current){const speed=1-Math.exp(-Math.min(dt,.05)*5);camera.position.lerp(goal.current,speed);controls.current.target.lerp(target.current,speed);controls.current.update();if(camera.position.distanceToSquared(goal.current)<.001)moving.current=false}gl.domElement.dataset.illustrationExploded=String(exploded);gl.domElement.dataset.illustrationPart=part??'';if(group.current){const crystal=group.current.getObjectByName('crystal');gl.domElement.dataset.crystalLayerZ=crystal?.position.z.toFixed(3)??'';const back=group.current.getObjectByName('back');gl.domElement.dataset.casebackLayerZ=back?.position.z.toFixed(3)??''}});
+ return <><color attach="background" args={['#07101b']}/><ambientLight intensity={.85}/><directionalLight position={[2,5,7]} intensity={4}/><pointLight position={[-3,2,3]} intensity={8} color="#78d9ff" distance={12}/><Environment resolution={128} frames={1}><Lightformer position={[-4,4,5]} rotation={[0,.5,0]} intensity={5} scale={[3,7,1]}/><Lightformer position={[4,2,3]} rotation={[0,-.5,0]} intensity={4} scale={[2,6,1]}/><Lightformer position={[0,5,-3]} intensity={3} scale={[8,2,1]}/></Environment><group ref={group} rotation={[0,-.35,0]}><WatchModel watch={design} detailed explode={exploded?1:0} selectedPart={part} onPart={onPart}/></group><OrbitControls ref={controls} makeDefault enablePan={false} enableDamping dampingFactor={.12} minDistance={2.2} maxDistance={24} minPolarAngle={.08} maxPolarAngle={Math.PI-.08} onStart={()=>{moving.current=false}}/></>;
+}
+export default function IllustrativeMechanism({quartz,exploded,part,focus,reset,onPart}:{quartz:boolean;exploded:boolean;part:PartId|null;focus:PartId|null;reset:number;onPart:(id:PartId)=>void}){const design=useMemo(()=>illustrationDesign(quartz),[quartz]);return <Canvas camera={{position:[5,2,10],fov:37,near:.1,far:70}} dpr={[1,1.5]} gl={{antialias:true,powerPreference:'high-performance'}} aria-label="Illustrative unbranded mechanism: real separated meshes, not the selected Tissot watch"><Suspense fallback={null}><Stage {...{design,exploded,part,focus,reset,onPart}}/></Suspense></Canvas>}

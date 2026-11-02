@@ -1,10 +1,11 @@
-import { Component, Suspense, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Component, Suspense, lazy, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, MessageCircle, RotateCcw } from 'lucide-react';
 import { RailScene } from './RailScene';
 import { atlasUrl, pieces, railPieces, pieceProduct, type EditorialPiece } from './collection';
 import GarmentPhoto from './GarmentPhoto';
 import { money, type Product } from '../store';
 import './fashion.css';
+const WatchShowroom=lazy(()=>import('./watches/WatchShowroom'));
 
 class RailBoundary extends Component<{children:ReactNode;fallback:ReactNode},{failed:boolean}> {
   state={failed:false};static getDerivedStateFromError(){return {failed:true}}
@@ -12,7 +13,7 @@ class RailBoundary extends Component<{children:ReactNode;fallback:ReactNode},{fa
 }
 const positionPercent=(index:number,count:number)=>50+(-(count-1)*.54+index*1.08)/12.4*100;
 export default function FashionShowroom({onProduct,onAssistant,focusRack,focusProductId,navigationKey}:{onProduct:(p:Product)=>void;onAssistant:()=>void;focusRack?:number|null;focusProductId?:string|null;navigationKey?:number}) {
-  const [category,setCategory]=useState('The full rail');
+  const [category,setCategory]=useState(()=>new URLSearchParams(window.location.search).get('category')==='watches'?'Watches':'The full rail');
   const [active,setActive]=useState<string|null>(null);const leaveTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);function activate(id:string|null){clearTimeout(leaveTimer.current);setActive(id)}function leavePiece(){clearTimeout(leaveTimer.current);leaveTimer.current=setTimeout(()=>setActive(null),180)}useEffect(()=>()=>clearTimeout(leaveTimer.current),[]);
   const [assets,setAssets]=useState<'loading'|'ready'|'error'>('loading');
   const scroll=useRef<HTMLDivElement>(null);
@@ -22,11 +23,12 @@ export default function FashionShowroom({onProduct,onAssistant,focusRack,focusPr
   useEffect(()=>{const image=new Image();image.onload=()=>setAssets('ready');image.onerror=()=>setAssets('error');image.src=atlasUrl;return()=>{image.onload=null;image.onerror=null}},[]);
   useEffect(()=>{if(!focusRack)return;setCategory('The full rail');const index=railPieces.findIndex(p=>focusProductId?p.id===focusProductId:pieceProduct(p).aisle===focusRack);if(index<0&&focusProductId){requestAnimationFrame(()=>{const card=document.querySelector<HTMLElement>(`[data-fashion-product="${focusProductId}"]`);card?.scrollIntoView({behavior:'smooth',block:'center'});card?.focus({preventScroll:true})})}if(index>=0){setActive(railPieces[index].id);requestAnimationFrame(()=>{scroll.current?.scrollTo({left:index*90-100,behavior:'smooth'});scroll.current?.scrollIntoView({behavior:'smooth',block:'center'})})}},[focusRack,focusProductId,navigationKey]);
   function selectCategory(next:string){setCategory(next);setActive(null);scroll.current?.scrollTo({left:0,behavior:'smooth'})}
+  if(category==='Watches')return <RailBoundary fallback={<div className="rail-loading">The watch showroom could not load. <button onClick={()=>selectCategory('The full rail')}>Return to Fashion World</button></div>}><Suspense fallback={<div className="rail-loading">Opening the watch collection…</div>}><WatchShowroom onBack={()=>selectCategory('The full rail')} onAssistant={onAssistant}/></Suspense></RailBoundary>;
   const flatRail=<div className="fashion-flat-rail"><div className="flat-metal-rail"/>{filtered.map((piece,index)=><div key={piece.id} className={'flat-piece '+(active===piece.id?'is-active':'')} style={{left:positionPercent(index,filtered.length)+'%'}}><span className="flat-hook"/><span className="flat-hanger"/><GarmentPhoto piece={piece}/></div>)}</div>;
   return <section className="fashion-showroom" aria-label="NEXAISLE fashion showroom">
     <div className="atelier-topline"><span>NEXAISLE / FASHION WORLD</span><button onClick={onAssistant}><MessageCircle size={13}/> STYLE CONCIERGE</button><span>COLLECTION № 002</span></div>
     <div className="atelier-intro"><span className="atelier-kicker">A MORE CONSIDERED WARDROBE</span><h1>The art of <em>getting dressed.</em></h1><p>Good pieces. Real texture. A little room to find your own style.</p></div>
-    <div className="atelier-collection-nav"><div role="group" aria-label="Filter the clothing rail">{['The full rail','Tops','Layers','Dresses'].map(c=><button key={c} aria-pressed={category===c} onClick={()=>selectCategory(c)}>{c}</button>)}</div><span>HOVER TO DISCOVER <ArrowUpRight size={12}/></span></div>
+    <div className="atelier-collection-nav"><div role="group" aria-label="Filter the clothing rail">{['The full rail','Tops','Layers','Dresses','Watches'].map(c=><button key={c} aria-pressed={category===c} onClick={()=>selectCategory(c)}>{c}</button>)}</div><span>HOVER TO DISCOVER <ArrowUpRight size={12}/></span></div>
     <div className="fashion-rail-shell" onMouseLeave={()=>activate(null)} onKeyDown={e=>{if(e.key==='Escape')setActive(null)}}>
       <div className="fashion-rail-scroll" ref={scroll}>
         <div className={'fashion-rail-stage '+(assets==='loading'?'is-loading':'')}>

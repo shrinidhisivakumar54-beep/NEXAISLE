@@ -9,3 +9,6 @@ dist/
 !.env.example
 
 .cache/lighting-scenes/
+
+# User-supplied PRX: local preview only, not authorised for publication.
+/public/models/watches/tissot/prx-powermatic-80/
