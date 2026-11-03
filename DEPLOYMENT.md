@@ -1,17 +1,17 @@
-# NEXAISLE hosted demo
+# NEXAISLE deployment
 
-Public website: https://nexaisle-shopping-studio.kaarthikha15.chatgpt.site
+Production Vercel website: https://nexaisle.vercel.app
 
-The Sites deployment serves the Vite production build from `dist/`. Run `npm ci` then `npm run build`. `.openai/hosting.json` identifies the hosted site.
+Vercel project `nexaisle` belongs to the `shrinidhi10` workspace and builds GitHub `main` using Vite, `npm run build`, and output directory `dist`.
 
-The showroom, cart, demo checkout, receipts and local IndexedDB avatar photos run in the browser. Browser data is scoped to the website address: a photo saved on localhost must be selected once again on the hosted website.
+## AI generation
 
-AI image generation is not connected on this public static demo. The existing local Node API remains available for local development; publishing its image generation requires a hosted backend and separately configured server-side credentials. No API key or local `.env` is included.
+`api/index.js` adapts requests to the existing `server/try-on.mjs` and `server/lighting.mjs` handlers. `vercel.json` routes `/api/*` to this function, preserves SPA deep links, bundles IKEA reference images, and allows 300 seconds per invocation. The old static unavailable-status file has been removed.
 
-The supplied restricted PRX model remains local-preview only and is excluded from publication.
+Configure `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `OPENAI_IMAGE_MODEL` in Vercel Production settings, then redeploy. Keys stay server-side. ZaoAPI uses `https://api.miaoquai.com/v1`. Keep `VITE_LOCAL_PRX_PREVIEW=false`.
 
-## Vercel deployment
+Hosted responses request JPEG to reduce response size. Requests above 4 MB are rejected with a clear error. Catalogue disk caching is disabled in the ephemeral Vercel function; customer photos are never written to server files. In-process queue and cooldown are per function instance, not global provider-budget controls.
 
-Import this GitHub repository using branch `save/nexaisle-watches-lighting-2026-11-02` into the intended Shrinidhi Vercel account. Use the Vite preset, `npm run build`, and output directory `dist`. The tracked `vercel.json` preserves direct links to browser routes. `.vercelignore` excludes local secrets and the restricted local-only watch model.
+The cart, receipts and IndexedDB avatar photos remain browser-local. A localhost photo must be selected once again on the Vercel domain. The restricted supplied PRX model remains local-only and is excluded from publication.
 
-The production domain is assigned by Vercel after deployment; no Vercel URL is claimed before publication succeeds. The AI image API still requires a separate backend connection.
+The older Sites-hosted static demo does not gain the Vercel backend automatically; use the Vercel link for AI generation.

@@ -1,8 +1,8 @@
 ## Live website
 
-https://nexaisle-shopping-studio.kaarthikha15.chatgpt.site
+https://nexaisle.vercel.app
 
-Public browser demo. AI generation needs a separately hosted API; see [deployment notes](DEPLOYMENT.md).
+Public browser demo with Vercel API routes for AI generation; see [deployment notes](DEPLOYMENT.md) for server-side provider configuration.
 
 # NEXAISLE — interactive 3D shopping
 
