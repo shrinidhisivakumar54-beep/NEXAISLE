@@ -1,3 +1,9 @@
+## Live website
+
+https://nexaisle-shopping-studio.kaarthikha15.chatgpt.site
+
+Public browser demo. AI generation needs a separately hosted API; see [deployment notes](DEPLOYMENT.md).
+
 # NEXAISLE — interactive 3D shopping
 
 A React + TypeScript + Vite + React Three Fiber concept. Shopping and the local mirror need no API key. Optional AI photo generation requires a paid server-side image API key.
