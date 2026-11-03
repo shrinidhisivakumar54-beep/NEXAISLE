@@ -1,4 +1,3 @@
-import {useNavigate} from 'react-router-dom';
 import { Component, Suspense, lazy, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, MessageCircle, RotateCcw, User } from 'lucide-react';
 import { RailScene } from './RailScene';
@@ -14,8 +13,7 @@ class RailBoundary extends Component<{children:ReactNode;fallback:ReactNode},{fa
   render(){return this.state.failed?this.props.fallback:this.props.children}
 }
 const positionPercent=(index:number,count:number)=>50+(-(count-1)*.54+index*1.08)/12.4*100;
-export default function FashionShowroom({onProduct,onAssistant,focusRack,focusProductId,navigationKey}:{onProduct:(p:Product)=>void;onAssistant:()=>void;focusRack?:number|null;focusProductId?:string|null;navigationKey?:number}) {
-  const navigate=useNavigate();
+export default function FashionShowroom({onProduct,onAssistant,onAvatar,focusRack,focusProductId,navigationKey}:{onProduct:(p:Product)=>void;onAssistant:()=>void;onAvatar:()=>void;focusRack?:number|null;focusProductId?:string|null;navigationKey?:number}) {
   const [category,setCategory]=useState(()=>new URLSearchParams(window.location.search).get('category')==='watches'?'Watches':new URLSearchParams(window.location.search).get('category')==='shoes'?'Shoes':'The full rail');
   const [active,setActive]=useState<string|null>(null);const leaveTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);function activate(id:string|null){clearTimeout(leaveTimer.current);setActive(id)}function leavePiece(){clearTimeout(leaveTimer.current);leaveTimer.current=setTimeout(()=>setActive(null),180)}useEffect(()=>()=>clearTimeout(leaveTimer.current),[]);
   const [assets,setAssets]=useState<'loading'|'ready'|'error'>('loading');
@@ -32,7 +30,7 @@ export default function FashionShowroom({onProduct,onAssistant,focusRack,focusPr
   return <section className="fashion-showroom" aria-label="NEXAISLE fashion showroom">
     <div className="atelier-topline"><span>NEXAISLE / FASHION WORLD</span><button onClick={onAssistant}><MessageCircle size={13}/> STYLE CONCIERGE</button><span>COLLECTION № 002</span></div>
     <div className="atelier-intro"><span className="atelier-kicker">A MORE CONSIDERED WARDROBE</span><h1>The art of <em>getting dressed.</em></h1><p>Good pieces. Real texture. A little room to find your own style.</p></div>
-    <div className="atelier-collection-nav"><div role="group" aria-label="Filter the clothing rail"><button onClick={()=>navigate('/avatar')}><User size={14}/> MY AVATAR</button>{['The full rail','Tops','Layers','Dresses','Watches','Shoes'].map(c=><button key={c} aria-pressed={category===c} onClick={()=>selectCategory(c)}>{c}</button>)}</div><span>HOVER TO DISCOVER <ArrowUpRight size={12}/></span></div>
+    <div className="atelier-collection-nav"><div role="group" aria-label="Filter the clothing rail"><button onClick={onAvatar}><User size={14}/> MY AVATAR</button>{['The full rail','Tops','Layers','Dresses','Watches','Shoes'].map(c=><button key={c} aria-pressed={category===c} onClick={()=>selectCategory(c)}>{c}</button>)}</div><span>HOVER TO DISCOVER <ArrowUpRight size={12}/></span></div>
     <div className="fashion-rail-shell" onMouseLeave={()=>activate(null)} onKeyDown={e=>{if(e.key==='Escape')setActive(null)}}>
       <div className="fashion-rail-scroll" ref={scroll}>
         <div className={'fashion-rail-stage '+(assets==='loading'?'is-loading':'')}>

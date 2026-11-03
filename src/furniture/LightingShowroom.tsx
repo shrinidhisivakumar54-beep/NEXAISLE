@@ -1,21 +1,22 @@
-import {useState,type CSSProperties} from 'react';
+import {useState} from 'react';
 import {Sun,Moon,Power,ArrowUpRight,Check,Heart,Lightbulb,ChevronRight} from 'lucide-react';
 import {lightingCollection,type LightingPiece} from './lightingCollection';
 import './lighting.css';
-import RoomPreview from './RoomPreview';
+import RelitPhoto from './RelitPhoto';
+import {fixtureSources} from './relighting';
+import RoomStudio, {type StudioScene} from './RoomStudio';
 const categories=['All lighting','Chandeliers','Pendants','Table lamps','Bulbs'];
-function PhotoPreview({piece,on,tone,night,strength,onToggle}:{piece:LightingPiece;on:boolean;tone:'warm'|'white';night:boolean;strength:number;onToggle:()=>void}){
+function PhotoPreview({piece,on,tone,night,strength,onToggle,scene}:{scene?:StudioScene;piece:LightingPiece;on:boolean;tone:'warm'|'white';night:boolean;strength:number;onToggle:()=>void}){
  const [failed,setFailed]=useState(false);
- const mask=piece.sources.map(([x,y,r])=>`radial-gradient(circle at ${x}% ${y}%, black 0%, black ${r*.45}%, transparent ${r*2.7}%)`).join(',');
- const css={'--light-colour':tone==='warm'?'255,190,108':'210,235,255','--light-strength':strength/100,'--light-mask':mask} as CSSProperties;
- return <button className={`lighting-preview ${night?'is-night':'is-day'} ${on?'is-powered':'is-off'} tone-${tone}`} onClick={onToggle} aria-label={`${on?'Switch off':'Switch on'} ${piece.name}`} aria-pressed={on} style={css}>
-  {failed?<div className="lighting-image-error"><Lightbulb size={36}/><b>Product image unavailable</b><span>Open the original product page below to view it.</span></div>:<><img key={piece.id} className="lighting-ambient-image" src={piece.room} alt={`${piece.name} — original IKEA product imagery`} onError={()=>setFailed(true)}/><img className="lighting-illuminated-image" src={piece.room} alt="" aria-hidden="true"/>{piece.sources.map(([x,y,r],i)=><span key={i} className="lighting-emitter" style={{left:x+'%',top:y+'%',width:r*2+'%',height:r*2+'%'}}/>)}<span className="lighting-room-spill"/></>}
+ const sources:LightingPiece["sources"]=scene?fixtureSources(piece.category).map(s=>[...s] as [number,number,number]):piece.sources;
+ const roomImage=scene?.image||piece.room;
+ return <button className={`lighting-preview ${scene?'has-room-scene':''} ${night?'is-night':'is-day'} ${on?'is-powered':'is-off'} tone-${tone}`} onClick={onToggle} aria-label={`${on?'Switch off':'Switch on'} ${piece.name}`} aria-pressed={on}>
+  {failed?<div className="lighting-image-error"><Lightbulb size={36}/><b>Product image unavailable</b><span>Open the original product page below to view it.</span></div>:<><RelitPhoto src={roomImage} alt={scene?`${piece.name} in ${scene.name} — approximate AI visualisation`:`${piece.name} — original IKEA product imagery`} on={on} night={night} tone={tone} strength={strength} sources={sources} kind={piece.category==='Chandeliers'?'chandelier':piece.category==='Bulbs'?'bulb':'shade'} onError={()=>setFailed(true)}/></>}
   <span className="lighting-image-label"><span className="lighting-status-dot"/>{on?'LIGHT ON':'LIGHT OFF'}<span>{night?'DARK ROOM':'DAYLIGHT'}</span></span>
   <span className="lighting-image-action"><Power size={15}/>{on?'Click image to switch off':'Click image to switch on'}</span>
  </button>
 }
 export default function LightingShowroom(){
- const [space,setSpace]=useState(true);
  const [selected,setSelected]=useState(lightingCollection[0]),[category,setCategory]=useState('All lighting'),[on,setOn]=useState(false),[night,setNight]=useState(false),[tone,setTone]=useState<'warm'|'white'>('warm'),[strength,setStrength]=useState(75);
  const [saved,setSaved]=useState<string[]>(()=>{try{const value=JSON.parse(localStorage.getItem('nexaisle-lighting-saved')||'[]');return Array.isArray(value)?value.filter(x=>typeof x==='string'):[]}catch{return []}});
  const filtered=lightingCollection.filter(p=>category==='All lighting'||p.category===category);
@@ -27,15 +28,14 @@ export default function LightingShowroom(){
   <div className="lighting-studio" id="lighting-studio">
    <div className="lighting-stage-wrap">
     <div className="lighting-room-switch" role="group" aria-label="Room lighting"><button aria-pressed={!night} onClick={()=>setNight(false)}><Sun size={15}/>Day mode</button><button aria-pressed={night} onClick={()=>setNight(true)}><Moon size={15}/>Dark mode</button></div>
-    <div className="space-view-toggle" role="group" aria-label="Product scene"><button aria-pressed={space} onClick={()=>setSpace(true)}>See It in Your Space</button><button aria-pressed={!space} onClick={()=>setSpace(false)}>Original product photograph</button></div>
-    {space?<RoomPreview piece={selected} on={on} night={night} tone={tone} strength={strength} onToggle={()=>setOn(v=>!v)}/>:<PhotoPreview key={selected.id} piece={selected} on={on} tone={tone} night={night} strength={strength} onToggle={()=>setOn(v=>!v)}/>}
-    <div className="lighting-photo-credit"><span>ORIGINAL MANUFACTURER IMAGERY · IKEA</span><a href={selected.source} target="_blank" rel="noreferrer">View source <ArrowUpRight size={12}/></a></div>
+    <RoomStudio piece={selected} light={{on,night,tone,strength,setOn,setNight,setStrength}}>{scene=><PhotoPreview key={selected.id+(scene?.image.slice(-80)||'original')} piece={selected} scene={scene} on={on} tone={tone} night={night} strength={strength} onToggle={()=>{if(!on&&strength===0)setStrength(75);setOn(v=>!v)}}/>}</RoomStudio>
+    <div className="lighting-photo-credit"><span>PRODUCT REFERENCE · IKEA / AI SCENES LABELLED ABOVE</span><a href={selected.source} target="_blank" rel="noreferrer">View source <ArrowUpRight size={12}/></a></div>
    </div>
    <div className="lighting-details"><span className="lighting-detail-kicker">{selected.category} / {String(lightingCollection.indexOf(selected)+1).padStart(2,'0')}</span><h2>{selected.name}</h2><p className="lighting-subtitle">{selected.subtitle}</p><p className="lighting-description">{selected.description}</p>
     <div className="lighting-material"><span>THE DETAILS</span><b>{selected.material}</b></div>
     <fieldset className="lighting-temperature"><legend>Choose your light</legend><div role="group" aria-label="Light colour"><button className="warm-option" aria-pressed={tone==='warm'} disabled={!!selected.temperature&&selected.temperature!==2700} onClick={()=>{setTone('warm');setOn(true)}}><i/><span>Warm yellow<small>2700 K · preview</small></span>{tone==='warm'&&<Check size={15}/>}</button><button className="white-option" aria-pressed={tone==='white'} disabled={!!selected.temperature&&selected.temperature!==4000} onClick={()=>{setTone('white');setOn(true)}}><i/><span>White light<small>4000 K · preview</small></span>{tone==='white'&&<Check size={15}/>}</button></div><p>{selected.temperature?`This bulb is rated ${selected.temperature} K. Choose the other bulb in the collection to compare colours.`:'Compare bulb colours in this fixture. Bulb compatibility and availability are listed on the original product page.'}</p></fieldset>
-    <label className="lighting-strength"><span>Preview intensity <b>{strength}%</b></span><input type="range" min="25" max="100" step="5" value={strength} onChange={e=>setStrength(Number(e.target.value))}/><small>Changes the screen preview.</small></label>
-    <button className="lighting-power primary" aria-pressed={on} onClick={()=>setOn(v=>!v)}><Power size={17}/>{on?'SWITCH LIGHT OFF':'SWITCH LIGHT ON'}</button>
+    <label className="lighting-strength"><span>Preview intensity <b>{strength}%</b></span><input type="range" min="0" max="100" step="1" value={strength} onChange={e=>{const value=Number(e.target.value);setStrength(value);setOn(value>0)}}/><small>Adjusts the photographic lighting estimate; not measured lux.</small></label>
+    <button className="lighting-power primary" aria-pressed={on} onClick={()=>{if(!on&&strength===0)setStrength(75);setOn(v=>!v)}}><Power size={17}/>{on?'SWITCH LIGHT OFF':'SWITCH LIGHT ON'}</button>
     <button className="lighting-save secondary" onClick={save} aria-pressed={saved.includes(selected.id)}><Heart size={16} fill={saved.includes(selected.id)?'currentColor':'none'}/>{saved.includes(selected.id)?'SAVED TO YOUR LIGHTING EDIT':'SAVE TO MY LIGHTING EDIT'}</button>
     <p className="lighting-preview-note">Original product imagery with an illustrative light effect. Colour, brightness and room darkness are screen previews, not measured light output.</p>
    </div>

@@ -8,5 +8,7 @@ dist/
 .env.*
 !.env.example
 
-# Restricted user-supplied watch model: local preview only.
+.cache/lighting-scenes/
+
+# User-supplied PRX: local preview only, not authorised for publication.
 /public/models/watches/tissot/prx-powermatic-80/

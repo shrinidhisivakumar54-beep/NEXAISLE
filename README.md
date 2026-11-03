@@ -1,3 +1,9 @@
+## Live website
+
+https://nexaisle-shopping-studio.kaarthikha15.chatgpt.site
+
+Public browser demo. AI generation needs a separately hosted API; see [deployment notes](DEPLOYMENT.md).
+
 # NEXAISLE — interactive 3D shopping
 
 A React + TypeScript + Vite + React Three Fiber concept. Shopping and the local mirror need no API key. Optional AI photo generation requires a paid server-side image API key.
@@ -91,73 +97,3 @@ npm run build
 `src/style.css`: responsive styling.
 
 Fonts fall back to system fonts if Google Fonts is unavailable. Use a WebGL-capable browser with hardware acceleration for best performance.
-
-## Shrinidhi Project Studio
-
-Your projects homepage is at **/projects/** on the same website. Locally, start `npm run dev` and add `/projects/` to the Local URL Vite prints. NEXAISLE is the first project, with direct links to its fashion and grocery worlds.
-
-Edit `public/projects/index.html` to update the studio name, text, or project cards. Styles are in `public/projects/studio.css`; screenshots are in `public/projects/images/`. The next-project panel is editorial text, not a live project or a button.
-
-### Save and back up
-
-Save edits in VS Code with Cmd+S. Keep the project folder, and commit/push source changes to GitHub for an online backup. Keep `.env` private; it is intentionally excluded from Git. The repository does not back up that file. On a new computer, install Node, run `npm install`, and recreate your private `.env`.
-
-### Publish a shareable studio and shopping demo on Netlify
-
-1. Sign in to Netlify and choose Add new project → Import an existing project.
-2. Connect GitHub and select `shrinidhisivakumar54-beep/NEXAISLE`, branch `main`.
-3. Build command: `npm run build`. Publish directory: `dist`. These are also configured in `netlify.toml`.
-4. Deploy. Netlify assigns the actual public URL; append `/projects/` to open the studio. Use that full address as your portfolio link.
-5. Later GitHub updates can redeploy automatically. A custom domain is optional.
-
-This is a **static preview deployment**. It includes the studio, shopping worlds, and local camera mirror. AI lookbook generation needs a separate authenticated backend and is not enabled by Netlify's static deployment. Do not put your API key in frontend code or a VITE_ variable. The /api route returns an explicit unavailable response on this preview. Your existing local server continues to work on your Mac. No hosting account is connected to this workspace, so a public URL has not been provisioned or verified.
-
-## True 3D outfit reconstruction (Meshy)
-
-The photo lookbook now offers **Make this look 3D** under each successful outfit image. This creates an actual textured GLB mesh through Meshy, then displays it in the browser with full orbit, front/left/back/right controls, zoom, reset and optional slow rotation. Download the GLB to keep it. This is separate from the ZaoAPI photo-generation connection.
-
-### Connect the additional service
-
-1. Create a Meshy account at https://www.meshy.ai/ and obtain a Meshy API key. Confirm API access and sufficient credits in that account; image-to-3D conversion is separately billed by Meshy.
-2. Add `MESHY_API_KEY=your_meshy_key_here` to the existing private `.env` beside `package.json`. Keep the existing OPENAI/ZaoAPI lines. Never put this key in a VITE_ variable or share it in chat.
-3. Restart `npm run server`; keep `npm run dev` running in the other terminal.
-4. Generate a full-body outfit photo as before. Under that result choose **Make this look 3D**, agree to send that generated image to Meshy, and choose **Create 3D model**.
-5. Keep the fitting studio open while the task runs. Choose **View in 360°** once ready. Download before closing the studio.
-
-If the server reports the service is disconnected, its configuration status is available at `http://127.0.0.1:8787/api/3d/status`; it never prints the key.
-
-Use a clear image of one person with head and feet visible and arms separated from the torso. The model is an estimated reconstruction of the generated image, not a scan of the original person. Face, proportions, garment details and unseen surfaces can change. One model represents one outfit: changing clothes requires another conversion. It is not rigged for animation and does not simulate fabric or physical fit.
-
-### Lifecycle and verification
-
-The adapter uses Meshy's image-to-3D POST/GET contract at `https://api.meshy.ai/openapi/v1/image-to-3d`. Creation sends the generated image as a data URI, requests texturing/PBR, and returns a local task reference. Polling does not create extra paid tasks. Only one conversion runs at a time per local server. Downloading goes through the backend, with a 50 MB cap and Meshy asset-host validation; keys never go to the browser or asset host.
-
-The app stores task references only in server memory and photo/results only in the open lookbook. Closing/replacing results loses the UI reference; restarting the backend loses all task references. It does not cancel a provider task. Meshy task history is the fallback for recovery or checking uncertain submissions. Check that history before retrying an interrupted creation. No automatic paid retries are made. The app does not persist uploaded/generated photos; provider storage and retention are governed by Meshy's policies.
-
-Live Meshy conversion has **not** been verified in this environment: no Meshy key is configured. Unit tests use simulated provider responses; browser checks use a synthetic GLB fixture, not a claimed reconstruction of the user. The viewer supports self-contained uncompressed GLB with embedded images; externally linked assets and Draco/Meshopt/KTX compression report a clear unsupported-format message.
-
-Run `npm run test:3d` for the backend lifecycle tests. The static Netlify preview still does not host either AI backend. Full public use needs an authenticated, quota-controlled server before exposing paid generation routes.
-
-## Interactive shopping upgrade
-
-Fashion World keeps its 3D hanger rail, catalogue and navigation, but personalised fitting now displays complete images returned by the connected image editor. The personalised viewer no longer renders InstantGarment, a face patch, a segmentation cutout, a garment texture or original sleeve layers. A reference is clearly labelled until an edited result is available. The previous complete photo stays visible while a new look is requested and decoded; only then does the viewer crossfade to it.
-
-Upload one reference in My avatar, Fashion World or the photo studio. Enable AI fitting once per reference and provider configuration. Selecting a new garment then requests one fitting after a short navigation debounce. Completed looks use the same cache in the carousel and photo studio. The shared coordinator serialises requests, deduplicates identical in-flight work, skips obsolete queued selections and caches submitted work that completes after navigation. It does not retry uncertain paid submissions automatically. It preloads neighbouring completed images and local garment crops, not unselected paid generations.
-
-The local API stores the original reference once in a capability-token photo session. Every fitting uses that same original image, never a previous AI-generated body or face. Reference changes/deletion clear the browser cache and local server session and abort outdated requests; page exit requests deletion using keepalive. Server sessions also expire after 30 minutes of inactivity, with a maximum of four references. Browser results are bounded to 16 images and approximately 64 MiB of string storage. A server restart or idle expiry may require the client to resend its still-saved original reference once, without another file-picker upload.
-
-The existing private ZaoAPI configuration is used: OPENAI_API_KEY, OPENAI_BASE_URL=https://api.miaoquai.com/v1 and OPENAI_IMAGE_MODEL=gpt-image-1 in .env. This is an OpenAI-compatible general image-editing adapter, not a verified dedicated virtual-try-on or cloth-simulation model. It sends the original person image first, the garment image second, high input fidelity and instructions for complete clothing replacement, hair/hand occlusion, original body proportions and consistent studio framing. Human parsing and garment fitting are delegated to the image editor; no independent semantic-parser or dense-pose inference service is installed or claimed. Face/garment fidelity and visual realism need review on real provider output. Full-body input is recommended; cropped input must not be presented as measured or known unseen proportions.
-
-No agent-initiated paid generation was used for verification. The production build and 45 mock-backed image, photo-session, coordinator and 3D tests passed. Browser checks showed a previous complete image remaining visible for a new selected garment, decoded result replacement and zero face/garment patch layers. The isolated test preview used an obvious labelled fixture and was stopped afterwards. Use the real preview URL printed by npm run dev; the temporary test port 5181 is not the live fitting service. See docs/AI-FITTING.md for architecture and limitations.
-
-Lighting includes See It in Your Space with five selectable room concepts and a bathroom thumbnail disabled until wet-area suitability is verified. The same manufacturer photograph is reused on generated room backgrounds. Zoom, two-room comparison, photo tilt, day/night and existing colour/power controls are available. These are illustrative composites, not calibrated scale or true 360-degree models. Original manufacturer room photographs remain available. Mattress controls and reports are preserved.
-
-Selected groceries have illustrated characters with cursor-following eyes, blinking and hover reactions, plus cart feedback. Product names, prices, details and cart controls remain available. Decorative motion respects reduced-motion preferences. Selected 3D products also have subtle faces.
-
-The fashion, furniture, mattress, photo studio and 3D scene routes load on demand. Clothing shares one local atlas; room concepts share one compressed JPEG atlas. Room changes and carousel arrows never call a generation API. Personal photo/AI caches are memory-only. The room atlas is AI-created concept imagery; lighting and mattress product images retain their original IKEA source attribution.
-
-Validation: run npm run build, npm run test:tryon, and npm run test:3d. Live paid image generation is not part of automated checks. The project keeps your existing private .env on this computer; it is intentionally excluded from GitHub. Use the two terminals described above to start the frontend and local API.
-
-## Current two-mode fitting workflow
-
-Instant Preview is now the default: unchanged original photo, local MediaPipe body anchors, garment-specific approximate fitting, manual adjustments, thumbnails and cached local switching. Realistic AI is explicitly requested with Generate Realistic Look and uses the existing provider and shared cache. Earlier notes describing AI-only default behaviour are superseded by docs/INSTANT-PREVIEW.md. No new paid service was added. Final browser inspection was blocked by an approval-review usage limit; build and all 52 tests passed. Open http://localhost:5175/fashion for the real local preview.
