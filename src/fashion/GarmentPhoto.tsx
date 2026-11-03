@@ -1,3 +1,4 @@
+import './garment.css';
 import { atlasUrl, pieceProduct, type EditorialPiece } from './collection';
 
 export default function GarmentPhoto({piece,className=''}:{piece:EditorialPiece;className?:string}) {
